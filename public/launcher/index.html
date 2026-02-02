@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Arcade Launcher</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Splash (fondo blanco) -->
+  <div id="splashOverlay" class="hidden">
+    <img src="../../assets/images/logo.png" alt="Logo">
+  </div>
+
+  <!-- Video de fondo en bucle (autoplay agregado) -->
+  <video id="bgVideo" autoplay muted loop playsinline></video>
+
+  <!-- Carrusel horizontal de juegos -->
+  <div class="viewport">
+    <div class="carousel" id="carousel"></div>
+  </div>
+
+  <!-- Menu del sistema (oculto por defecto) -->
+  <div id="systemMenu" class="hidden"></div>
+
+  <!-- Instrucciones -->
+  <div class="instructions">
+    ← → Mover &nbsp;|&nbsp; Enter Seleccionar &nbsp;|&nbsp; ↑ ↓ Menú 
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>

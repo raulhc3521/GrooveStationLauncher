@@ -1,0 +1,23 @@
+[
+  {
+    "id": "shutdown",
+    "label": "Apagar",
+    "command": "shutdown /s /t 0"
+  },
+  {
+    "id": "restart",
+    "label": "Reiniciar",
+    "command": "shutdown /r /t 0"
+  },
+  {
+    "id": "m1769994238698",
+    "label": "Explorer",
+    "command": "explorer.exe"
+  },
+  {
+    "id": "m1769994252771",
+    "label": "Salir",
+    "command": "exit",
+    "action": "exit"
+  }
+]

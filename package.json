@@ -1,0 +1,27 @@
+{
+  "name": "arcade-launcher",
+  "version": "1.0.0",
+  "main": "main-launcher.js",
+  "scripts": {
+    "start": "electron .",
+    "launcher": "electron main.js",
+    "config": "electron main-configurator.js"
+  },
+
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1"
+  },
+  "launcher": {
+    "appId": "cl.arcade.launcher",
+    "productName": "Arcade Launcher",
+    "win": {
+      "target": "nsis",
+      "icon": "icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}

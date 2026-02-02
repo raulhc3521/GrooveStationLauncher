@@ -1,0 +1,150 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+}
+
+/* Video de fondo */
+#bgVideo {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+  filter: brightness(0.9);
+}
+
+/* Carrusel */
+.viewport {
+  position: relative;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.carousel {
+  display: flex;
+  align-items: center;
+  transition: transform 0.5s ease;
+}
+
+.item {
+  flex: 0 0 auto;
+  width: 60vw;
+  text-align: center;
+  opacity: 0.3;
+  transform: scale(0.75);
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.item.active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.item img {
+  width: 60vw;
+  max-height: 70vh;
+  object-fit: contain;
+}
+
+.label {
+  margin-top: 10px;
+  font-size: 28px;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+}
+
+/* Instrucciones */
+.instructions {
+  position: fixed;
+  bottom: 20px;
+  width: 100%;
+  text-align: center;
+  z-index: 5;
+  font-size: 18px;
+  opacity: 0.5;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+/* Menu del sistema */
+#systemMenu {
+  position: fixed;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(0);
+  background: rgba(112, 112, 112, 0.75);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  z-index: 100;
+  opacity: 1;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+#systemMenu.hidden {
+  display: flex !important;
+  /* Mantener flex para la animación */
+  opacity: 0;
+  transform: translateX(-50%) translateY(-20px);
+  pointer-events: none;
+  /* No capturar eventos mientras está oculto */
+}
+
+/* Después de la animación, ocultarlo completamente */
+#systemMenu.fully-hidden {
+  display: none;
+}
+
+.menu-item {
+  padding: 10px 22px;
+  font-size: 16px;
+  border-radius: 6px;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.menu-item.menu-active {
+  background: rgb(255, 2, 129);
+}
+
+/* Splash */
+#splashOverlay {
+  position: fixed;
+  inset: 0;
+  background: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 300ms ease;
+  z-index: 9999;
+}
+
+#splashOverlay img {
+  max-width: 80vw;
+  max-height: 80vh;
+  object-fit: contain;
+}
+
+#splashOverlay.visible {
+  opacity: 1;
+}
+
+#splashOverlay.hidden {
+  display: none;
+}
+
+/* Utilidades */
+.hidden {
+  display: none;
+}

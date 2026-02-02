@@ -1,0 +1,181 @@
+/*  Reset  */
+* {
+  box-sizing: border-box;
+}
+
+/*  Base  */
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  padding: 28px;
+  max-width: 820px;
+  margin: 0 auto;
+  background: #1a1a2e;
+  color: #e2e8f0;
+  min-height: 100vh;
+}
+
+h1 {
+  margin: 0 0 24px;
+  font-size: 22px;
+  color: #fff;
+}
+
+h2 {
+  font-size: 17px;
+  color: #a78bfa;
+  border-bottom: 1px solid #2a2a4a;
+  padding-bottom: 6px;
+  margin: 28px 0 10px;
+}
+
+h3 {
+  font-size: 14px;
+  color: #64748b;
+  margin: 18px 0 8px;
+}
+
+section {
+  margin-bottom: 8px;
+}
+
+/*  Listas  */
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0;
+}
+
+li {
+  background: #16162a;
+  border: 1px solid #2a2a4a;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+}
+
+/*  Campos  */
+.field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.field:last-child {
+  margin-bottom: 0;
+}
+
+.field label {
+  min-width: 110px;
+  font-size: 13px;
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.field input[type="text"],
+.field select {
+  flex: 1;
+  background: #0f0f1e;
+  border: 1px solid #334155;
+  border-radius: 5px;
+  padding: 5px 8px;
+  color: #e2e8f0;
+  font-size: 13px;
+}
+
+.field input[type="text"]:focus,
+.field select:focus {
+  outline: none;
+  border-color: #a78bfa;
+}
+
+.field input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #a78bfa;
+  cursor: pointer;
+}
+
+.field select {
+  flex: none;
+  min-width: 180px;
+}
+
+/*  Fila multimedia  */
+.media-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.media-row label {
+  min-width: 120px;
+  font-size: 13px;
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.media-row input {
+  flex: 1;
+  background: #0f0f1e;
+  border: 1px solid #334155;
+  border-radius: 5px;
+  padding: 5px 8px;
+  color: #e2e8f0;
+  font-size: 13px;
+}
+
+/*  Lista de musica  */
+#musicList li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#musicList input {
+  flex: 1;
+  background: #0f0f1e;
+  border: 1px solid #334155;
+  border-radius: 5px;
+  padding: 5px 8px;
+  color: #e2e8f0;
+  font-size: 13px;
+}
+
+/*  Botones  */
+button {
+  background: #a78bfa;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+button:hover {
+  background: #8b6fd4;
+}
+
+button.del,
+button.delm,
+button.del-menu {
+  background: #dc2626;
+  padding: 4px 10px;
+}
+
+button.del:hover,
+button.delm:hover,
+button.del-menu:hover {
+  background: #b91c1c;
+}
+
+/* Botones de seccion (Agregar ...) */
+section>button {
+  margin-top: 4px;
+  padding: 7px 14px;
+}

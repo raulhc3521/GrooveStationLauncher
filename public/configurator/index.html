@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Arcade Configurator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>🎮 Launcher Configurator</h1>
+
+  <!-- Seccion: Juegos -->
+  <section>
+    <h2>Juegos</h2>
+    <ul id="gameList"></ul>
+    <button id="addGameBtn">+ Agregar juego</button>
+  </section>
+
+  <!-- Seccion: Multimedia -->
+  <section>
+    <h2>Multimedia</h2>
+    <div class="media-row">
+      <label>Video de fondo:</label>
+      <input id="bgVideoInput" type="text" placeholder="Ruta del video...">
+      <button id="pickVideo">📂 Seleccionar</button>
+    </div>
+    <h3>Canciones de fondo</h3>
+    <ul id="musicList"></ul>
+    <button id="addMusicBtn">+ Agregar pista</button>
+  </section>
+
+  <!-- Seccion: Menu del sistema -->
+  <section>
+    <h2>Menú del sistema</h2>
+    <ul id="menuList"></ul>
+    <button id="addMenuBtn">+ Agregar opción</button>
+  </section>
+
+  <script src="renderer.js"></script>
+</body>
+</html>

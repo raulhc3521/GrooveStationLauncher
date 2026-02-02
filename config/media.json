@@ -1,0 +1,9 @@
+{
+  "music": [
+    "assets/music/track2.ogg",
+    "assets/music/track3.ogg",
+    "assets/music/track4.ogg",
+    "assets/music/track5.ogg"
+  ],
+  "backgroundVideo": "C:\\Users\\raulh\\OneDrive\\Documentos\\GitHub\\arcade-launcher-corregido\\assets\\video\\bg2.mp4"
+}
