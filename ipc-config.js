@@ -1,9 +1,48 @@
-const { ipcMain, dialog } = require("electron");
+const { ipcMain, dialog, app } = require("electron");
 const fs   = require("fs");
 const path = require("path");
 
 module.exports = function registerConfigIPC(baseDir) {
-  const configDir = path.join(baseDir, "config");
+
+  //  Resolver carpeta de config 
+  // En desarrollo:  usa config/ del proyecto (lectura + escritura)
+  // Empaquetado:    copia config/ a userData la primera vez,
+  //                 luego lee/escribe desde ahí
+  function getConfigDir() {
+    // Si estamos empaquetado (app.isPackaged = true)
+    if (app.isPackaged) {
+      const userDataConfig = path.join(app.getPath("userData"), "config");
+
+      // Si no existe aún en userData → copiar desde resources (bundled)
+      if (!fs.existsSync(userDataConfig)) {
+        fs.mkdirSync(userDataConfig, { recursive: true });
+
+        // La carpeta config bundled está en resources/config (extraResources)
+        const bundledConfig = path.join(process.resourcesPath, "config");
+
+        if (fs.existsSync(bundledConfig)) {
+          // Copiar cada .json que traiga el instalador
+          fs.readdirSync(bundledConfig).forEach(file => {
+            if (file.endsWith(".json")) {
+              fs.copyFileSync(
+                path.join(bundledConfig, file),
+                path.join(userDataConfig, file)
+              );
+            }
+          });
+          console.log("Config copiado a userData:", userDataConfig);
+        }
+      }
+
+      return userDataConfig;
+    }
+
+    // En desarrollo: usa config/ del proyecto directamente
+    return path.join(baseDir, "config");
+  }
+
+  const configDir = getConfigDir();
+  console.log("Config dir resuelto:", configDir);
 
   //  Config I/O 
   ipcMain.handle("read-config", async (_, file) => {
@@ -59,4 +98,7 @@ module.exports = function registerConfigIPC(baseDir) {
       });
     });
   });
+
+  // Retorna la ruta resuelta para que main-launcher la use en el watcher
+  return configDir;
 };

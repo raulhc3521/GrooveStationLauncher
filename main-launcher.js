@@ -1,8 +1,8 @@
 const registerConfigIPC = require("./ipc-config");
 const { app, BrowserWindow, ipcMain } = require("electron");
-const path = require("path");
-const fs = require("fs");
-const { spawn } = require("child_process");
+const path       = require("path");
+const fs         = require("fs");
+const { spawn }  = require("child_process");
 
 app.commandLine.appendSwitch("autoplay-policy", "no-user-gesture-required");
 
@@ -25,11 +25,11 @@ function createWindow() {
   win.loadFile(path.join(__dirname, "public", "launcher", "index.html"));
 
   win.on("focus", () => win.webContents.send("launcher-focus"));
-  win.on("blur", () => win.webContents.send("launcher-blur"));
+  win.on("blur",  () => win.webContents.send("launcher-blur"));
 }
 
-function startConfigWatcher() {
-  const configDir = path.join(__dirname, "config");
+//  Observar cambios en config/ y notificar al renderer 
+function startConfigWatcher(configDir) {
   try {
     fs.watch(configDir, { persistent: true }, (eventType, filename) => {
       if (!filename || !filename.endsWith(".json")) return;
@@ -40,18 +40,19 @@ function startConfigWatcher() {
         }
       }, 300);
     });
+    console.log("Observando config en:", configDir);
   } catch (e) {
     console.error("No se pudo observar config/:", e.message);
   }
 }
 
 app.whenReady().then(() => {
-  registerConfigIPC(__dirname);
-  startConfigWatcher();
+  const configDir = registerConfigIPC(__dirname); // ← retorna la ruta resuelta
+  startConfigWatcher(configDir);                 // ← la pasa al watcher
   createWindow();
 });
 
-// Lanzar juego (puede ser 1 o 2 ejecutables)
+//  Lanzar juego (puede ser 1 o 2 ejecutables) 
 ipcMain.handle("launch-game", async (_, exePath, exePath2, args = []) => {
   if (!exePath) return { ok: false, error: "no path" };
   
@@ -67,12 +68,12 @@ ipcMain.handle("launch-game", async (_, exePath, exePath2, args = []) => {
     // Envolver la ruta en comillas para manejar espacios
     const quotedPath = `"${exePath}"`;
     
-    // Lanzar usando shell
+    // Lanzar usando shell (igual que doble clic en Windows)
     const child1 = spawn(quotedPath, args, { 
       detached: true, 
       stdio: "ignore",
       cwd: cwd1,
-      shell: true,  
+      shell: true,  // ← Usa cmd.exe (como doble clic)
       windowsHide: false
     });
     
@@ -114,8 +115,7 @@ ipcMain.handle("launch-game", async (_, exePath, exePath2, args = []) => {
   }
 });
 
-
-// Cerrar la app (abre explorer.exe primero) 
+//  Cerrar la app (abre explorer.exe primero) 
 ipcMain.on("exit-app", () => {
   try {
     // Abrir explorer antes de cerrar
@@ -123,10 +123,9 @@ ipcMain.on("exit-app", () => {
   } catch (e) {
     console.error("No se pudo abrir explorer:", e);
   }
-
+  
   // Pequeño delay para que explorer se abra
   setTimeout(() => app.quit(), 200);
 });
-
 
 app.on("window-all-closed", () => { app.quit(); });

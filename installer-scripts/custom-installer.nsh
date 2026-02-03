@@ -1,22 +1,19 @@
 !macro customInstall
-  # Crear acceso directo al Launcher en el escritorio
-  CreateShortCut "$DESKTOP\Arcade Launcher.lnk" "$INSTDIR\Arcade Launcher.exe" "" "$INSTDIR\Arcade Launcher.exe" 0
-  
-  # Crear acceso directo al Configurador en el escritorio
-  CreateShortCut "$DESKTOP\Arcade Config.lnk" "$INSTDIR\Arcade Launcher.exe" "--config" "$INSTDIR\Arcade Launcher.exe" 0
-  
-  # Crear accesos en el menú inicio
-  CreateDirectory "$SMPROGRAMS\Arcade Launcher"
-  CreateShortCut "$SMPROGRAMS\Arcade Launcher\Arcade Launcher.lnk" "$INSTDIR\Arcade Launcher.exe" "" "$INSTDIR\Arcade Launcher.exe" 0
-  CreateShortCut "$SMPROGRAMS\Arcade Launcher\Arcade Config.lnk" "$INSTDIR\Arcade Launcher.exe" "--config" "$INSTDIR\Arcade Launcher.exe" 0
-  CreateShortCut "$SMPROGRAMS\Arcade Launcher\Desinstalar.lnk" "$INSTDIR\Uninstall Arcade Launcher.exe"
+  # Escritorio: Launcher
+  CreateShortCut "$DESKTOP\GrooveStation.lnk" "$INSTDIR\GrooveStation.exe" "" "$INSTDIR\GrooveStation.exe" 0
+
+  # Escritorio: Configurador
+  CreateShortCut "$DESKTOP\GrooveStation Config.lnk" "$INSTDIR\GrooveStation.exe" "--config" "$INSTDIR\GrooveStation.exe" 0
+
+  # Menú inicio
+  CreateDirectory "$SMPROGRAMS\GrooveStation"
+  CreateShortCut "$SMPROGRAMS\GrooveStation\GrooveStation.lnk" "$INSTDIR\GrooveStation.exe" "" "$INSTDIR\GrooveStation.exe" 0
+  CreateShortCut "$SMPROGRAMS\GrooveStation\GrooveStation Config.lnk" "$INSTDIR\GrooveStation.exe" "--config" "$INSTDIR\GrooveStation.exe" 0
+  CreateShortCut "$SMPROGRAMS\GrooveStation\Desinstalar.lnk" "$INSTDIR\Uninstall GrooveStation.exe"
 !macroend
 
 !macro customUnInstall
-  # Eliminar accesos directos del escritorio
-  Delete "$DESKTOP\Arcade Launcher.lnk"
-  Delete "$DESKTOP\Arcade Config.lnk"
-  
-  # Eliminar carpeta del menú inicio
-  RMDir /r "$SMPROGRAMS\Arcade Launcher"
+  Delete "$DESKTOP\GrooveStation.lnk"
+  Delete "$DESKTOP\GrooveStation Config.lnk"
+  RMDir /r "$SMPROGRAMS\GrooveStation"
 !macroend
