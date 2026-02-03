@@ -1,9 +1,9 @@
 {
-  "name": "arcade-launcher",
-  "version": "2.0.0",
-  "description": "Arcade Game Launcher with Configuration Tool",
+  "name": "groovestation-launcher",
+  "version": "0.2.0",
+  "description": "GrooveStation Arcade Game Launcher",
   "main": "main.js",
-  "author": "Tu Nombre",
+  "author": "Raulhc3521",
   "license": "MIT",
   "scripts": {
     "launcher": "electron main-launcher.js",
@@ -14,8 +14,8 @@
     "pack": "electron-builder --dir"
   },
   "build": {
-    "appId": "com.arcade.launcher",
-    "productName": "Arcade Launcher",
+    "appId": "com.groovestation.launcher",
+    "productName": "GrooveStation",
     "directories": {
       "output": "dist",
       "buildResources": "build"
@@ -28,13 +28,6 @@
       "!config-examples",
       "!build",
       "!installer-scripts"
-    ],
-    "extraFiles": [
-      {
-        "from": "installer-scripts",
-        "to": ".",
-        "filter": ["*.bat"]
-      }
     ],
     "extraResources": [
       {
@@ -57,11 +50,11 @@
       "allowElevation": true,
       "createDesktopShortcut": "always",
       "createStartMenuShortcut": true,
-      "shortcutName": "Arcade Launcher",
+      "shortcutName": "GrooveStation",
       "installerIcon": "build/icon.ico",
       "uninstallerIcon": "build/icon.ico",
       "installerHeaderIcon": "build/icon.ico",
-      "menuCategory": "Arcade Launcher",
+      "menuCategory": "GrooveStation",
       "license": "LICENSE.txt",
       "include": "installer-scripts/custom-installer.nsh"
     }
