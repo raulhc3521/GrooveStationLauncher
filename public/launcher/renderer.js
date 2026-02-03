@@ -1,11 +1,10 @@
-// 
 // ARCADE LAUNCHER — Proceso Renderer
-// 
 
 const carouselRoot  = document.getElementById("carousel");
 const systemMenu    = document.getElementById("systemMenu");
 const bgVideo       = document.getElementById("bgVideo");
 const splashOverlay = document.getElementById("splashOverlay");
+const viewport      = document.querySelector(".viewport");
 
 let games = [];
 let menu  = [];
@@ -13,21 +12,19 @@ let media = {};
 
 let items       = [];
 let index       = 0;
+let menuItems   = [];
 let menuIndex   = 0;
 let menuVisible = false;
 let bgMusic     = null;
 let fadeTimer   = null;
 
-// Guarda la última URL que le pusimos al video para comparaciones
 let currentBgVideoSrc = "";
+let navigationLocked  = false; // Para debounce
 
-//  HELPER DE RUTAS
-// Rutas absolutas Windows  →  file:///C:/Users/Mis%20Juegos/...
-// Rutas relativas del proyecto →  ../../<ruta>  (relativa al HTML en public/launcher/)
+//  HELPER DE RUTAS 
 function resolvePath(p) {
   if (!p) return "";
   if (/^[A-Za-z]:[/\\]/.test(p)) {
-    // encodeURI codifica espacios y caracteres especiales pero preserva : / . - _
     return "file:///" + encodeURI(p.replace(/\\/g, "/"));
   }
   return "../../" + p.replace(/\\/g, "/").replace(/^\.\//, "");
@@ -38,7 +35,7 @@ function playSound(name) {
   const files = { 
     move:   "move.mp3", 
     select: "select.ogg",
-    start:  "start.ogg"   // ← agregado
+    start:  "start.ogg"
   };
   const file = files[name];
   if (!file) return;
@@ -46,21 +43,25 @@ function playSound(name) {
   audio.play().catch(err => console.warn("Audio play failed:", err));
 }
 
-//  VIDEO DE FONDO 
+//  VIDEO DE FONDO (MÚLTIPLES VIDEOS ALEATORIOS) 
 function loadVideo() {
-  const resolved = resolvePath(media.backgroundVideo);
+  // media.backgroundVideos es un array ahora
+  const videos = media.backgroundVideos || [];
+  if (!videos.length) return;
+
+  const randomVideo = videos[Math.floor(Math.random() * videos.length)];
+  const resolved    = resolvePath(randomVideo);
+  
   if (!resolved || resolved === currentBgVideoSrc) return;
 
   console.log("Cargando video de fondo:", resolved);
   currentBgVideoSrc = resolved;
   bgVideo.src       = resolved;
   bgVideo.load();
-  bgVideo.play().catch(err => {
-    console.error("Error al reproducir video:", err);
-  });
+  bgVideo.play().catch(err => console.error("Error al reproducir video:", err));
 }
 
-//  CARGA DE CONFIG (inicial) 
+//  CARGA DE CONFIG 
 async function loadAll() {
   const g  = await window.api.readConfig("games");
   const m  = await window.api.readConfig("menu");
@@ -76,11 +77,9 @@ async function loadAll() {
   media = md;
 
   console.log("Config cargada:", { games: games.length, menu: menu.length, media });
-
-  // La UI se renderiza después del splash (en onSplashFinished)
 }
 
-//  RECARGA SILENTE (cuando el configurador guarda) 
+//  RECARGA SILENTE 
 async function reloadConfig() {
   const g  = await window.api.readConfig("games");
   const m  = await window.api.readConfig("menu");
@@ -162,21 +161,43 @@ function updateCarousel() {
   carouselRoot.style.transform = `translateX(${x + delta}px)`;
 }
 
-//  MENU DEL SISTEMA 
+//  MENU DEL SISTEMA (CENTRADO COMO CARRUSEL) 
 function renderMenu() {
   systemMenu.innerHTML = "";
+  
+  // Crear contenedor interno que se desplaza
+  const menuCarousel = document.createElement("div");
+  menuCarousel.className = "menu-carousel";
+  menuCarousel.id = "menuCarousel";
+  
   menu.forEach((item, i) => {
     const div       = document.createElement("div");
     div.className   = "menu-item" + (i === 0 ? " menu-active" : "");
     div.textContent = item.label;
-    systemMenu.appendChild(div);
+    menuCarousel.appendChild(div);
   });
+  
+  systemMenu.appendChild(menuCarousel);
+  menuItems = menuCarousel.querySelectorAll(".menu-item");
 }
 
 function updateMenuHighlight() {
-  document.querySelectorAll(".menu-item").forEach((el, i) => {
-    el.classList.toggle("menu-active", i === menuIndex);
-  });
+  menuItems.forEach((el, i) => el.classList.toggle("menu-active", i === menuIndex));
+  
+  // Centrar el item activo (igual que carrusel de juegos)
+  const active = menuItems[menuIndex];
+  if (!active) return;
+  
+  const menuCarousel = document.getElementById("menuCarousel");
+  const rect   = active.getBoundingClientRect();
+  const center = window.innerWidth / 2;
+  const delta  = center - (rect.left + rect.width / 2);
+  
+  const t     = menuCarousel.style.transform;
+  const match = t && t.match(/-?[\d.]+/);
+  const x     = match ? parseFloat(match[0]) || 0 : 0;
+  
+  menuCarousel.style.transform = `translateX(${x + delta}px)`;
 }
 
 function showMenu() {
@@ -184,16 +205,17 @@ function showMenu() {
   menuIndex   = 0;
   systemMenu.classList.remove("hidden");
   systemMenu.classList.remove("fully-hidden");
+  viewport.classList.add("menu-open"); 
   updateMenuHighlight();
   playSound("move");
 }
 
 function hideMenu() {
   menuVisible = false;
-  systemMenu.classList.add("hidden"); // Dispara la animación
+  systemMenu.classList.add("hidden");
+  viewport.classList.remove("menu-open");
   playSound("move");
   
-  // Después de la animación (300ms), ocultar completamente
   setTimeout(() => {
     if (!menuVisible) {
       systemMenu.classList.add("fully-hidden");
@@ -214,10 +236,9 @@ function startBackgroundMusic() {
   const track    = media.music[Math.floor(Math.random() * media.music.length)];
   bgMusic        = new Audio(resolvePath(track));
   bgMusic.loop   = true;
-  bgMusic.volume = 0;  // Empieza en 0 para fade in
+  bgMusic.volume = 0;
   bgMusic.play().catch(() => {});
   
-  // Fade in gradual
   fadeInMusic();
 }
 
@@ -247,24 +268,32 @@ function fadeInMusic() {
 window.addEventListener("focus", () => fadeInMusic());
 window.addEventListener("blur",  () => fadeOutMusic());
 
-//  TECLADO 
-// Carousel:  ← →  navegar | Enter lanzar | ↑ abrir menú
-// Menú:      ← →  navegar | Enter ejecutar | ↓ cerrar menú
+//  TECLADO (CON DEBOUNCE EN NAVEGACIÓN) 
 document.addEventListener("keydown", async (e) => {
 
   if (!menuVisible) {
     //  Modo carousel 
     if (e.key === "ArrowLeft") {
       e.preventDefault();
+      if (navigationLocked) return; // Evita spam
+      navigationLocked = true;
+      
       index = (index - 1 + items.length) % items.length;
       playSound("move");
       updateCarousel();
+      
+      setTimeout(() => { navigationLocked = false; }, 200); // Unlock tras 500ms
 
     } else if (e.key === "ArrowRight") {
       e.preventDefault();
+      if (navigationLocked) return;
+      navigationLocked = true;
+      
       index = (index + 1) % items.length;
       playSound("move");
       updateCarousel();
+      
+      setTimeout(() => { navigationLocked = false; }, 200);
 
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
@@ -275,22 +304,33 @@ document.addEventListener("keydown", async (e) => {
       const g = games[index];
       if (!g) return;
       playSound("select");
-      setTimeout(() => window.api.launchGame(g.exe), 200);
+      // Lanzar con exe y exe2 (si existe)
+      setTimeout(() => window.api.launchGame(g.exe, g.exe2 || null), 200);
     }
 
   } else {
-    //  Modo menú (horizontal) 
+    //  Modo menú 
     if (e.key === "ArrowLeft") {
       e.preventDefault();
+      if (navigationLocked) return;
+      navigationLocked = true;
+      
       menuIndex = (menuIndex - 1 + menu.length) % menu.length;
       updateMenuHighlight();
       playSound("move");
+      
+      setTimeout(() => { navigationLocked = false; }, 200);
 
     } else if (e.key === "ArrowRight") {
       e.preventDefault();
+      if (navigationLocked) return;
+      navigationLocked = true;
+      
       menuIndex = (menuIndex + 1) % menu.length;
       updateMenuHighlight();
       playSound("move");
+      
+      setTimeout(() => { navigationLocked = false; }, 200);
 
     } else if (e.key === "ArrowDown") {
       e.preventDefault();
@@ -305,15 +345,8 @@ document.addEventListener("keydown", async (e) => {
 
 //  INICIO 
 window.addEventListener("DOMContentLoaded", () => {
-  // 1. Mostrar splash inmediatamente
   showSplash();
-  
-  // 2. Reproducir sonido "start" de forma inmediata (sin esperar config)
   playSound("start");
-  
-  // 3. Cargar configuración (async, no bloquea el splash)
   loadAll();
-  
-  // 4. Listener para recargas desde el configurador
   window.api.onConfigChanged(() => reloadConfig());
 });

@@ -1,17 +1,24 @@
+// 
 // ARCADE CONFIGURATOR — Proceso Renderer
+// 
 
 const gameList     = document.getElementById("gameList");
 const addGameBtn   = document.getElementById("addGameBtn");
 const musicList    = document.getElementById("musicList");
 const addMusicBtn  = document.getElementById("addMusicBtn");
-const bgVideoInput = document.getElementById("bgVideoInput");
-const pickVideoBtn = document.getElementById("pickVideo");
+const videoList    = document.getElementById("videoList");
+const addVideoBtn  = document.getElementById("addVideoBtn");
 const menuList     = document.getElementById("menuList");
 const addMenuBtn   = document.getElementById("addMenuBtn");
+const saveBtn      = document.getElementById("saveBtn");
+const cancelBtn    = document.getElementById("cancelBtn");
 
 let games     = [];
-let media     = { music: [], backgroundVideo: "" };
+let media     = { music: [], backgroundVideos: [] };
 let menuItems = [];
+
+// Copia inicial para detectar cambios
+let initialState = null;
 
 //  HELPERS 
 function escapeHtml(str) {
@@ -23,9 +30,34 @@ function escapeHtml(str) {
     .replace(/"/g,  "&quot;");
 }
 
-function saveGames()  { window.api.writeConfig("games",  games);     }
-function saveMedia()  { window.api.writeConfig("media",  media);     }
-function saveMenu()   { window.api.writeConfig("menu",   menuItems); }
+function saveAll() {
+  window.api.writeConfig("games",  games);
+  window.api.writeConfig("media",  media);
+  window.api.writeConfig("menu",   menuItems);
+  
+  // Actualizar estado inicial tras guardar
+  initialState = JSON.stringify({ games, media, menuItems });
+  
+  alert("✅ Cambios guardados correctamente");
+}
+
+function cancelChanges() {
+  if (!initialState) return;
+  
+  const confirmed = confirm("⚠️ ¿Descartar todos los cambios y recargar?");
+  if (!confirmed) return;
+  
+  // Recargar desde el estado inicial
+  const state = JSON.parse(initialState);
+  games     = state.games;
+  media     = state.media;
+  menuItems = state.menuItems;
+  
+  renderGames();
+  renderMusic();
+  renderVideos();
+  renderMenu();
+}
 
 //  CARGA INICIAL 
 async function load() {
@@ -38,16 +70,27 @@ async function load() {
   if (!m  || m.error)  { console.error("menu:",  m);  return; }
 
   games     = g;
-  media     = md;
   menuItems = m;
+  
+  // Migrar backgroundVideo → backgroundVideos si es necesario
+  media = md;
+  if (md.backgroundVideo && !md.backgroundVideos) {
+    media.backgroundVideos = [md.backgroundVideo];
+    delete media.backgroundVideo;
+  }
+  if (!media.backgroundVideos) media.backgroundVideos = [];
+  if (!media.music) media.music = [];
+
+  // Guardar estado inicial
+  initialState = JSON.stringify({ games, media, menuItems });
 
   renderGames();
   renderMusic();
+  renderVideos();
   renderMenu();
-  bgVideoInput.value = media.backgroundVideo || "";
 }
 
-//  JUEGOS 
+//  JUEGOS (con exe2) 
 function renderGames() {
   gameList.innerHTML = "";
 
@@ -59,9 +102,14 @@ function renderGames() {
         '<input class="name" value="' + escapeHtml(gm.name) + '" data-i="' + i + '">' +
       '</div>' +
       '<div class="field">' +
-        '<label>Ejecutable</label>' +
+        '<label>Ejecutable 1</label>' +
         '<input type="text" class="exe" value="' + escapeHtml(gm.exe) + '" data-i="' + i + '">' +
         '<button class="browse-exe" data-i="' + i + '">📂</button>' +
+      '</div>' +
+      '<div class="field">' +
+        '<label>Ejecutable 2</label>' +
+        '<input type="text" class="exe2" value="' + escapeHtml(gm.exe2 || "") + '" data-i="' + i + '">' +
+        '<button class="browse-exe2" data-i="' + i + '">📂</button>' +
       '</div>' +
       '<div class="field">' +
         '<label>Imagen (logo)</label>' +
@@ -79,14 +127,12 @@ function renderGames() {
   gameList.querySelectorAll(".name").forEach(inp => {
     inp.addEventListener("input", e => {
       games[+e.target.dataset.i].name = e.target.value;
-      saveGames();
     });
   });
 
   gameList.querySelectorAll(".exe").forEach(inp => {
     inp.addEventListener("input", e => {
       games[+e.target.dataset.i].exe = e.target.value;
-      saveGames();
     });
   });
 
@@ -95,7 +141,22 @@ function renderGames() {
       const file = await window.api.openExe();
       if (file) {
         games[+e.target.dataset.i].exe = file;
-        saveGames();
+        renderGames();
+      }
+    });
+  });
+
+  gameList.querySelectorAll(".exe2").forEach(inp => {
+    inp.addEventListener("input", e => {
+      games[+e.target.dataset.i].exe2 = e.target.value;
+    });
+  });
+
+  gameList.querySelectorAll(".browse-exe2").forEach(btn => {
+    btn.addEventListener("click", async e => {
+      const file = await window.api.openExe();
+      if (file) {
+        games[+e.target.dataset.i].exe2 = file;
         renderGames();
       }
     });
@@ -104,7 +165,6 @@ function renderGames() {
   gameList.querySelectorAll(".image").forEach(inp => {
     inp.addEventListener("input", e => {
       games[+e.target.dataset.i].image = e.target.value;
-      saveGames();
     });
   });
 
@@ -113,7 +173,6 @@ function renderGames() {
       const file = await window.api.openImage();
       if (file) {
         games[+e.target.dataset.i].image = file;
-        saveGames();
         renderGames();
       }
     });
@@ -122,22 +181,26 @@ function renderGames() {
   gameList.querySelectorAll(".enabled").forEach(cb => {
     cb.addEventListener("change", e => {
       games[+e.target.dataset.i].enabled = e.target.checked;
-      saveGames();
     });
   });
 
   gameList.querySelectorAll(".del").forEach(btn => {
     btn.addEventListener("click", e => {
       games.splice(+e.target.dataset.i, 1);
-      saveGames();
       renderGames();
     });
   });
 }
 
 addGameBtn.addEventListener("click", () => {
-  games.push({ id: "g" + Date.now(), name: "Nuevo juego", exe: "", image: "", enabled: true });
-  saveGames();
+  games.push({ 
+    id: "g" + Date.now(), 
+    name: "Nuevo juego", 
+    exe: "", 
+    exe2: "",
+    image: "", 
+    enabled: true 
+  });
   renderGames();
 });
 
@@ -156,14 +219,12 @@ function renderMusic() {
   musicList.querySelectorAll(".mtrack").forEach(inp => {
     inp.addEventListener("input", e => {
       media.music[+e.target.dataset.i] = e.target.value;
-      saveMedia();
     });
   });
 
   musicList.querySelectorAll(".delm").forEach(btn => {
     btn.addEventListener("click", e => {
       media.music.splice(+e.target.dataset.i, 1);
-      saveMedia();
       renderMusic();
     });
   });
@@ -173,19 +234,40 @@ addMusicBtn.addEventListener("click", async () => {
   const file = await window.api.openFile({
     filters: [{ name: "Audio", extensions: ["ogg", "mp3", "wav"] }]
   });
-  if (file) { media.music.push(file); saveMedia(); renderMusic(); }
+  if (file) { media.music.push(file); renderMusic(); }
 });
 
-pickVideoBtn.addEventListener("click", async () => {
+//  VIDEOS DE FONDO (MÚLTIPLES) 
+function renderVideos() {
+  videoList.innerHTML = "";
+
+  media.backgroundVideos.forEach((v, i) => {
+    const li = document.createElement("li");
+    li.innerHTML =
+      '<input class="vtrack" data-i="' + i + '" value="' + escapeHtml(v) + '">' +
+      '<button class="del-video" data-i="' + i + '">🗑️</button>';
+    videoList.appendChild(li);
+  });
+
+  videoList.querySelectorAll(".vtrack").forEach(inp => {
+    inp.addEventListener("input", e => {
+      media.backgroundVideos[+e.target.dataset.i] = e.target.value;
+    });
+  });
+
+  videoList.querySelectorAll(".del-video").forEach(btn => {
+    btn.addEventListener("click", e => {
+      media.backgroundVideos.splice(+e.target.dataset.i, 1);
+      renderVideos();
+    });
+  });
+}
+
+addVideoBtn.addEventListener("click", async () => {
   const file = await window.api.openFile({
     filters: [{ name: "Video", extensions: ["mp4", "mov", "mkv", "avi"] }]
   });
-  if (file) { bgVideoInput.value = file; media.backgroundVideo = file; saveMedia(); }
-});
-
-bgVideoInput.addEventListener("input", () => {
-  media.backgroundVideo = bgVideoInput.value;
-  saveMedia();
+  if (file) { media.backgroundVideos.push(file); renderVideos(); }
 });
 
 //  MENU DEL SISTEMA 
@@ -217,14 +299,12 @@ function renderMenu() {
   menuList.querySelectorAll(".menu-label").forEach(inp => {
     inp.addEventListener("input", e => {
       menuItems[+e.target.dataset.i].label = e.target.value;
-      saveMenu();
     });
   });
 
   menuList.querySelectorAll(".menu-command").forEach(inp => {
     inp.addEventListener("input", e => {
       menuItems[+e.target.dataset.i].command = e.target.value;
-      saveMenu();
     });
   });
 
@@ -236,14 +316,12 @@ function renderMenu() {
       } else {
         delete menuItems[+e.target.dataset.i].action;
       }
-      saveMenu();
     });
   });
 
   menuList.querySelectorAll(".del-menu").forEach(btn => {
     btn.addEventListener("click", e => {
       menuItems.splice(+e.target.dataset.i, 1);
-      saveMenu();
       renderMenu();
     });
   });
@@ -251,9 +329,12 @@ function renderMenu() {
 
 addMenuBtn.addEventListener("click", () => {
   menuItems.push({ id: "m" + Date.now(), label: "Nueva opcion", command: "" });
-  saveMenu();
   renderMenu();
 });
+
+//  BOTONES PRINCIPALES 
+saveBtn.addEventListener("click", saveAll);
+cancelBtn.addEventListener("click", cancelChanges);
 
 //  INICIO 
 window.addEventListener("DOMContentLoaded", load);
