@@ -6,7 +6,9 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>🎮 Launcher Configurator</h1>
+  <h1>🎮 Arcade Configurator</h1>
+
+ 
 
   <!-- Seccion: Juegos -->
   <section>
@@ -18,11 +20,11 @@
   <!-- Seccion: Multimedia -->
   <section>
     <h2>Multimedia</h2>
-    <div class="media-row">
-      <label>Video de fondo:</label>
-      <input id="bgVideoInput" type="text" placeholder="Ruta del video...">
-      <button id="pickVideo">📂 Seleccionar</button>
-    </div>
+    
+    <h3>Videos de fondo (aleatorios)</h3>
+    <ul id="videoList"></ul>
+    <button id="addVideoBtn">+ Agregar video</button>
+    
     <h3>Canciones de fondo</h3>
     <ul id="musicList"></ul>
     <button id="addMusicBtn">+ Agregar pista</button>
@@ -34,6 +36,12 @@
     <ul id="menuList"></ul>
     <button id="addMenuBtn">+ Agregar opción</button>
   </section>
+
+   <!-- Botones principales -->
+  <div class="main-buttons">
+    <button id="saveBtn" class="btn-save">💾 Guardar cambios</button>
+    <button id="cancelBtn" class="btn-cancel">❌ Cancelar y recargar</button>
+  </div>
 
   <script src="renderer.js"></script>
 </body>

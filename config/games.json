@@ -3,42 +3,43 @@
     "id": "g1769994208132",
     "name": "Stepmania",
     "exe": "D:\\StepMania 5\\Program\\StepMania.exe",
-    "image": "C:\\Users\\raulh\\OneDrive\\Documentos\\GitHub\\arcade-launcher-corregido\\assets\\images\\stepmania.png",
+    "image": "C:\\Users\\raulh\\OneDrive\\Documentos\\GitHub\\GrooveStationLauncher\\assets\\images\\stepmania.png",
     "enabled": true
   },
   {
     "id": "g1770005519750",
     "name": "IIDX 32 - Pinky Crush",
     "exe": "",
-    "image": "C:\\Users\\raulh\\OneDrive\\Documentos\\GitHub\\arcade-launcher-corregido\\assets\\images\\iidx.png",
+    "image": "C:\\Users\\raulh\\OneDrive\\Documentos\\GitHub\\GrooveStationLauncher\\assets\\images\\iidx.png",
     "enabled": true
   },
   {
     "id": "g1770005559663",
     "name": "Dance Dance Revolution WORLD",
-    "exe": "",
-    "image": "C:\\Users\\raulh\\OneDrive\\Documentos\\GitHub\\arcade-launcher-corregido\\assets\\images\\ddr.png",
-    "enabled": true
+    "exe": "C:\\MDX-2025061002\\asphyxia-core-x64.exe",
+    "image": "C:\\Users\\raulh\\OneDrive\\Documentos\\GitHub\\GrooveStationLauncher\\assets\\images\\ddr.png",
+    "enabled": true,
+    "exe2": "C:\\MDX-2025061002\\spice.exe"
   },
   {
     "id": "g1770005583462",
     "name": "DJ MAX Respect V",
     "exe": "",
-    "image": "C:\\Users\\raulh\\OneDrive\\Documentos\\GitHub\\arcade-launcher-corregido\\assets\\images\\djmax.png",
+    "image": "C:\\Users\\raulh\\OneDrive\\Documentos\\GitHub\\GrooveStationLauncher\\assets\\images\\djmax.png",
     "enabled": true
   },
   {
     "id": "g1770005621154",
     "name": "In The Groove",
     "exe": "",
-    "image": "C:\\Users\\raulh\\OneDrive\\Documentos\\GitHub\\arcade-launcher-corregido\\assets\\images\\itg.png",
+    "image": "C:\\Users\\raulh\\OneDrive\\Documentos\\GitHub\\GrooveStationLauncher\\assets\\images\\itg.png",
     "enabled": true
   },
   {
     "id": "g1770005638944",
     "name": "Spin Rhythm XD",
     "exe": "",
-    "image": "C:\\Users\\raulh\\OneDrive\\Documentos\\GitHub\\arcade-launcher-corregido\\assets\\images\\srxd.png",
+    "image": "C:\\Users\\raulh\\OneDrive\\Documentos\\GitHub\\GrooveStationLauncher\\assets\\images\\srxd.png",
     "enabled": true
   }
 ]

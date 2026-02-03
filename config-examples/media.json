@@ -1,0 +1,13 @@
+{
+  "music": [
+    "assets/music/track1.ogg",
+    "assets/music/track2.ogg",
+    "assets/music/track3.ogg"
+  ],
+  "backgroundVideos": [
+    "C:\\Launcher\\assets\\video\\BG1.mp4",
+    "C:\\Launcher\\assets\\video\\BG2.mp4",
+    "C:\\Launcher\\assets\\video\\BG3.mp4"
+  ],
+  "startSound": "assets/sounds/start.ogg"
+}

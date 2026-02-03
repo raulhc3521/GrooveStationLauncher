@@ -1,0 +1,18 @@
+[
+  {
+    "id": "stepmania",
+    "name": "StepMania",
+    "exe": "D:\\StepMania 5\\Program\\StepMania.exe",
+    "exe2": "",
+    "image": "C:\\Launcher\\assets\\images\\stepmania.png",
+    "enabled": true
+  },
+  {
+    "id": "ddr",
+    "name": "DDR",
+    "exe": "C:\\Games\\DDR\\spice.exe",
+    "exe2": "C:\\Games\\DDR\\launcher.exe",
+    "image": "C:\\Launcher\\assets\\images\\ddr.png",
+    "enabled": true
+  }
+]

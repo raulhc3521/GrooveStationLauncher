@@ -1,0 +1,7 @@
+[
+  { "id": "shutdown", "label": "Apagar", "command": "shutdown /s /t 0" },
+  { "id": "restart", "label": "Reiniciar", "command": "shutdown /r /t 0" },
+  { "id": "explorer", "label": "Explorer", "command": "explorer.exe" },
+  { "id": "anydesk", "label": "AnyDesk", "command": "anydesk" },
+  { "id": "exit", "label": "Cerrar", "action": "exit" }
+]

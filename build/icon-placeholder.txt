@@ -1,0 +1,11 @@
+⚠️ PLACEHOLDER DE ICONO
+
+Este archivo debe ser reemplazado por "icon.ico" real.
+
+Para crear un icono .ico válido:
+1. Usa un convertidor online: https://www.icoconverter.com/
+2. Sube una imagen PNG de al menos 256x256px
+3. Genera el .ico con múltiples tamaños (16, 32, 48, 64, 128, 256)
+4. Guárdalo como build/icon.ico
+
+Mientras tanto, electron-builder usará el icono por defecto.

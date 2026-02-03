@@ -3,23 +3,42 @@
 <head>
   <meta charset="utf-8">
   <title>Arcade Launcher</title>
+  
+  <!-- Google Fonts: Audiowide -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
+  
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Splash (fondo blanco) -->
+  <!-- Splash -->
   <div id="splashOverlay" class="hidden">
     <img src="../../assets/images/logo.png" alt="Logo">
   </div>
 
-  <!-- Video de fondo en bucle (autoplay agregado) -->
+  <!-- Video de fondo -->
   <video id="bgVideo" autoplay muted loop playsinline></video>
+
+  <!-- Flecha izquierda -->
+  <div class="arrow arrow-left">
+    <img src="../../assets/images/arrow.png" alt="←">
+  </div>
+
+  <!-- Barra blanca de fondo para los logos -->
+  <div class="logo-background-bar"></div>
 
   <!-- Carrusel horizontal de juegos -->
   <div class="viewport">
     <div class="carousel" id="carousel"></div>
   </div>
 
-  <!-- Menu del sistema (oculto por defecto) -->
+  <!-- Flecha derecha -->
+  <div class="arrow arrow-right">
+    <img src="../../assets/images/arrow.png" alt="→">
+  </div>
+
+  <!-- Menu del sistema (borde a borde) -->
   <div id="systemMenu" class="hidden"></div>
 
   <!-- Instrucciones -->

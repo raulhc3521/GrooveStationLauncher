@@ -1,27 +1,73 @@
 {
   "name": "arcade-launcher",
-  "version": "1.0.0",
-  "main": "main-launcher.js",
+  "version": "2.0.0",
+  "description": "Arcade Game Launcher with Configuration Tool",
+  "main": "main.js",
+  "author": "Tu Nombre",
+  "license": "MIT",
   "scripts": {
-    "start": "electron .",
-    "launcher": "electron main.js",
-    "config": "electron main-configurator.js"
+    "launcher": "electron main-launcher.js",
+    "config": "electron main-configurator.js",
+    "start": "npm run launcher",
+    "build": "electron-builder",
+    "build:win": "electron-builder --win",
+    "pack": "electron-builder --dir"
   },
-
-  "devDependencies": {
-    "electron": "^28.0.0",
-    "electron-builder": "^24.9.1"
-  },
-  "launcher": {
-    "appId": "cl.arcade.launcher",
+  "build": {
+    "appId": "com.arcade.launcher",
     "productName": "Arcade Launcher",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "**/*",
+      "!dist",
+      "!node_modules",
+      "!README.md",
+      "!config-examples",
+      "!build",
+      "!installer-scripts"
+    ],
+    "extraFiles": [
+      {
+        "from": "installer-scripts",
+        "to": ".",
+        "filter": ["*.bat"]
+      }
+    ],
+    "extraResources": [
+      {
+        "from": "config",
+        "to": "config"
+      }
+    ],
     "win": {
-      "target": "nsis",
-      "icon": "icon.ico"
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "build/icon.ico"
     },
     "nsis": {
       "oneClick": false,
-      "allowToChangeInstallationDirectory": true
+      "allowToChangeInstallationDirectory": true,
+      "allowElevation": true,
+      "createDesktopShortcut": "always",
+      "createStartMenuShortcut": true,
+      "shortcutName": "Arcade Launcher",
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "installerHeaderIcon": "build/icon.ico",
+      "menuCategory": "Arcade Launcher",
+      "license": "LICENSE.txt",
+      "include": "installer-scripts/custom-installer.nsh"
     }
+  },
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1"
   }
 }

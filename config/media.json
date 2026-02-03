@@ -5,5 +5,7 @@
     "assets/music/track4.ogg",
     "assets/music/track5.ogg"
   ],
-  "backgroundVideo": "C:\\Users\\raulh\\OneDrive\\Documentos\\GitHub\\arcade-launcher-corregido\\assets\\video\\bg2.mp4"
+  "backgroundVideos": [
+    "C:\\Users\\raulh\\OneDrive\\Documentos\\GitHub\\GrooveStationLauncher\\assets\\video\\bg2.mp4"
+  ]
 }

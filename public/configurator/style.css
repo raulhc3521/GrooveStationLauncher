@@ -38,6 +38,54 @@ section {
   margin-bottom: 8px;
 }
 
+/*  Botones principales (Guardar/Cancelar)  */
+.main-buttons {
+  display: flex;
+  position: sticky;
+  bottom: 0;
+  width: 100%;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding: 16px;
+  background: #16162a;
+  border: 1px solid #2a2a4a;
+  border-radius: 10px;
+}
+
+.btn-save,
+.btn-cancel {
+  flex: 1;
+  padding: 12px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-save {
+  background: #10b981;
+  color: #fff;
+}
+
+.btn-save:hover {
+  background: #059669;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.btn-cancel {
+  background: #ef4444;
+  color: #fff;
+}
+
+.btn-cancel:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
 /*  Listas  */
 ul {
   list-style: none;
@@ -54,6 +102,10 @@ li {
 }
 
 /*  Campos  */
+.name { 
+  width: 100%;
+}
+
 .field {
   display: flex;
   align-items: center;
@@ -101,39 +153,16 @@ li {
   min-width: 180px;
 }
 
-/*  Fila multimedia  */
-.media-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 8px 0;
-}
-
-.media-row label {
-  min-width: 120px;
-  font-size: 13px;
-  color: #94a3b8;
-  flex-shrink: 0;
-}
-
-.media-row input {
-  flex: 1;
-  background: #0f0f1e;
-  border: 1px solid #334155;
-  border-radius: 5px;
-  padding: 5px 8px;
-  color: #e2e8f0;
-  font-size: 13px;
-}
-
-/*  Lista de musica  */
-#musicList li {
+/*  Lista de musica y videos  */
+#musicList li,
+#videoList li {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-#musicList input {
+#musicList input,
+#videoList input {
   flex: 1;
   background: #0f0f1e;
   border: 1px solid #334155;
@@ -163,14 +192,16 @@ button:hover {
 
 button.del,
 button.delm,
-button.del-menu {
+button.del-menu,
+button.del-video {
   background: #dc2626;
   padding: 4px 10px;
 }
 
 button.del:hover,
 button.delm:hover,
-button.del-menu:hover {
+button.del-menu:hover,
+button.del-video:hover {
   background: #b91c1c;
 }
 
