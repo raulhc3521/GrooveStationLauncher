@@ -1,50 +1,10 @@
 [
   {
-    "id": "g1769994208132",
+    "id": "g1770188414593",
     "name": "Stepmania",
-    "exe": "D:\\StepMania 5\\Program\\StepMania.exe",
+    "exe": "C:\\Games\\StepMania 5\\Program\\StepMania.exe",
     "exe2": "",
-    "image": "C:\\Users\\raulh\\OneDrive\\Documentos\\GitHub\\GrooveStationLauncher\\assets\\images\\stepmania.png",
-    "enabled": true
-  },
-  {
-    "id": "g1770005519750",
-    "name": "IIDX 32 - Pinky Crush",
-    "exe": "",
-    "exe2": "",
-    "image": "C:\\Users\\raulh\\OneDrive\\Documentos\\GitHub\\GrooveStationLauncher\\assets\\images\\iidx.png",
-    "enabled": true
-  },
-  {
-    "id": "g1770005559663",
-    "name": "Dance Dance Revolution WORLD",
-    "exe": "C:\\MDX-2025061002\\asphyxia-core-x64.exe",
-    "exe2": "C:\\MDX-2025061002\\spice.exe",
-    "image": "C:\\Users\\raulh\\OneDrive\\Documentos\\GitHub\\GrooveStationLauncher\\assets\\images\\ddr.png",
-    "enabled": true
-  },
-  {
-    "id": "g1770005583462",
-    "name": "DJ MAX Respect V",
-    "exe": "",
-    "exe2": "",
-    "image": "C:\\Users\\raulh\\OneDrive\\Documentos\\GitHub\\GrooveStationLauncher\\assets\\images\\djmax.png",
-    "enabled": true
-  },
-  {
-    "id": "g1770005621154",
-    "name": "In The Groove",
-    "exe": "",
-    "exe2": "",
-    "image": "C:\\Users\\raulh\\OneDrive\\Documentos\\GitHub\\GrooveStationLauncher\\assets\\images\\itg.png",
-    "enabled": true
-  },
-  {
-    "id": "g1770005638944",
-    "name": "Spin Rhythm XD",
-    "exe": "",
-    "exe2": "",
-    "image": "C:\\Users\\raulh\\OneDrive\\Documentos\\GitHub\\GrooveStationLauncher\\assets\\images\\srxd.png",
+    "image": "C:\\Program Files\\GrooveStation\\GrooveStation\\resources\\assets\\images\\stepmania.png",
     "enabled": true
   }
 ]

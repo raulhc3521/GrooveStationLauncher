@@ -1,14 +1,16 @@
 <!doctype html>
 <html>
+
 <head>
   <meta charset="utf-8">
   <title>Arcade Configurator</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <h1>🎮 Arcade Configurator</h1>
 
-    <!-- Seccion: Juegos -->
+  <!-- Seccion: Juegos -->
   <section>
     <h2>Juegos</h2>
     <ul id="gameList"></ul>
@@ -18,11 +20,15 @@
   <!-- Seccion: Multimedia -->
   <section>
     <h2>Multimedia</h2>
-    
+    <h3>Volumen de música</h3>
+    <div class="volume-control">
+      <input type="range" id="volumeSlider" min="0" max="100" value="40">
+      <span id="volumeLabel">40%</span>
+    </div>
     <h3>Videos de fondo (aleatorios)</h3>
     <ul id="videoList"></ul>
     <button id="addVideoBtn">+ Agregar video</button>
-    
+
     <h3>Canciones de fondo</h3>
     <ul id="musicList"></ul>
     <button id="addMusicBtn">+ Agregar pista</button>
@@ -50,17 +56,19 @@
           <input type="checkbox" id="disableShellCheckbox">
           Desactivar interfaz de Windows (Explorer) al iniciar GrooveStation
         </label>
-        <p class="setting-note">Nota: Esta opción oculta la barra de tareas y el escritorio. El Explorer se restaurará automáticamente al cerrar GrooveStation.</p>
+        <p class="setting-note">Nota: Esta opción oculta la barra de tareas y el escritorio. El Explorer se restaurará
+          automáticamente al cerrar GrooveStation.</p>
       </div>
     </div>
   </section>
 
   <!-- Botones principales -->
   <div class="main-buttons">
-    <button id="saveBtn" class="btn-save">💾 Guardar cambios</button>
-    <button id="cancelBtn" class="btn-cancel">❌ Cancelar y recargar</button>
+    <button id="saveBtn" class="btn-save">💾 Guardar y cerrar</button>
+    <button id="cancelBtn" class="btn-cancel">❌ Deshacer</button>
   </div>
 
   <script src="renderer.js"></script>
 </body>
+
 </html>

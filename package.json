@@ -37,6 +37,14 @@
       {
         "from": "assets",
         "to": "assets"
+      },
+      {
+        "from": "build/icon-launcher.ico",
+        "to": "icon-launcher.ico"
+      },
+      {
+        "from": "build/icon-config.ico",
+        "to": "icon-config.ico"
       }
     ],
     "win": {
@@ -48,7 +56,7 @@
           ]
         }
       ],
-      "icon": "build/icon.ico"
+      "icon": "build/icon-launcher.ico"
     },
     "nsis": {
       "perMachine": true,
@@ -58,12 +66,14 @@
       "createDesktopShortcut": "always",
       "createStartMenuShortcut": true,
       "shortcutName": "GrooveStation",
-      "installerIcon": "build/icon.ico",
-      "uninstallerIcon": "build/icon.ico",
-      "installerHeaderIcon": "build/icon.ico",
+      "installerIcon": "build/icon-launcher.ico",
+      "uninstallerIcon": "build/icon-launcher.ico",
+      "installerHeaderIcon": "build/icon-launcher.ico",
       "menuCategory": "GrooveStation",
       "license": "LICENSE.txt",
-      "include": "installer-scripts/custom-installer.nsh"
+      "include": "installer-scripts/custom-installer.nsh",
+      "runAfterFinish": false,
+      "deleteAppDataOnUninstall": true
     }
   },
   "devDependencies": {

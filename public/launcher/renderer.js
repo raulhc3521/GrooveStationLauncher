@@ -1,28 +1,28 @@
 // ARCADE LAUNCHER — Proceso Renderer
 
-const carouselRoot  = document.getElementById("carousel");
-const systemMenu    = document.getElementById("systemMenu");
-const bgVideo       = document.getElementById("bgVideo");
+const carouselRoot = document.getElementById("carousel");
+const systemMenu = document.getElementById("systemMenu");
+const bgVideo = document.getElementById("bgVideo");
 const splashOverlay = document.getElementById("splashOverlay");
-const viewport      = document.querySelector(".viewport");
+const viewport = document.querySelector(".viewport");
 const backgroundBar = document.querySelector(".logo-background-bar");
 const menuArrowLeft = document.getElementById("menuArrowLeft");
 const menuArrowRight = document.getElementById("menuArrowRight");
 
 let games = [];
-let menu  = [];
+let menu = [];
 let media = {};
 
-let items       = [];
-let index       = 0;
-let menuItems   = [];
-let menuIndex   = 0;
+let items = [];
+let index = 0;
+let menuItems = [];
+let menuIndex = 0;
 let menuVisible = false;
-let bgMusic     = null;
-let fadeTimer   = null;
+let bgMusic = null;
+let fadeTimer = null;
 
 let currentBgVideoSrc = "";
-let navigationLocked  = false; // Para debounce
+let navigationLocked = false; // Para debounce
 
 //  HELPER DE RUTAS 
 function resolvePath(p) {
@@ -35,10 +35,10 @@ function resolvePath(p) {
 
 //  SONIDOS UI 
 function playSound(name) {
-  const files = { 
-    move:   "move.mp3", 
+  const files = {
+    move: "move.mp3",
     select: "select.ogg",
-    start:  "start.ogg"
+    start: "start.ogg"
   };
   const file = files[name];
   if (!file) return;
@@ -53,21 +53,21 @@ function loadVideo() {
   if (!videos.length) return;
 
   const randomVideo = videos[Math.floor(Math.random() * videos.length)];
-  const resolved    = resolvePath(randomVideo);
-  
+  const resolved = resolvePath(randomVideo);
+
   if (!resolved || resolved === currentBgVideoSrc) return;
 
   console.log("Cargando video de fondo:", resolved);
   currentBgVideoSrc = resolved;
-  bgVideo.src       = resolved;
+  bgVideo.src = resolved;
   bgVideo.load();
   bgVideo.play().catch(err => console.error("Error al reproducir video:", err));
 }
 
 //  CARGA DE CONFIG 
 async function loadAll() {
-  const g  = await window.api.readConfig("games");
-  const m  = await window.api.readConfig("menu");
+  const g = await window.api.readConfig("games");
+  const m = await window.api.readConfig("menu");
   const md = await window.api.readConfig("media");
 
   if (g.error || m.error || md.error) {
@@ -76,7 +76,7 @@ async function loadAll() {
   }
 
   games = g.filter(x => x.enabled);
-  menu  = m;
+  menu = m;
   media = md;
 
   console.log("Config cargada:", { games: games.length, menu: menu.length, media });
@@ -84,14 +84,14 @@ async function loadAll() {
 
 //  RECARGA SILENTE 
 async function reloadConfig() {
-  const g  = await window.api.readConfig("games");
-  const m  = await window.api.readConfig("menu");
+  const g = await window.api.readConfig("games");
+  const m = await window.api.readConfig("menu");
   const md = await window.api.readConfig("media");
 
   if (g.error || m.error || md.error) return;
 
   games = g.filter(x => x.enabled);
-  menu  = m;
+  menu = m;
   media = md;
 
   loadVideo();
@@ -126,15 +126,15 @@ function renderCarousel() {
   carouselRoot.innerHTML = "";
 
   games.forEach((g, i) => {
-    const div     = document.createElement("div");
+    const div = document.createElement("div");
     div.className = "item" + (i === 0 ? " active" : "");
 
-    const img   = document.createElement("img");
-    img.src     = resolvePath(g.image);
-    img.alt     = g.name;
+    const img = document.createElement("img");
+    img.src = resolvePath(g.image);
+    img.alt = g.name;
 
-    const label       = document.createElement("div");
-    label.className   = "label";
+    const label = document.createElement("div");
+    label.className = "label";
     label.textContent = g.name;
 
     div.appendChild(img);
@@ -153,13 +153,13 @@ function updateCarousel() {
   const active = items[index];
   if (!active) return;
 
-  const rect   = active.getBoundingClientRect();
+  const rect = active.getBoundingClientRect();
   const center = window.innerWidth / 2;
-  const delta  = center - (rect.left + rect.width / 2);
+  const delta = center - (rect.left + rect.width / 2);
 
-  const t     = carouselRoot.style.transform;
+  const t = carouselRoot.style.transform;
   const match = t && t.match(/-?[\d.]+/);
-  const x     = match ? parseFloat(match[0]) || 0 : 0;
+  const x = match ? parseFloat(match[0]) || 0 : 0;
 
   carouselRoot.style.transform = `translateX(${x + delta}px)`;
 }
@@ -167,45 +167,45 @@ function updateCarousel() {
 //  MENU DEL SISTEMA (CENTRADO COMO CARRUSEL) 
 function renderMenu() {
   systemMenu.innerHTML = "";
-  
+
   // Crear contenedor interno que se desplaza
   const menuCarousel = document.createElement("div");
   menuCarousel.className = "menu-carousel";
   menuCarousel.id = "menuCarousel";
-  
+
   menu.forEach((item, i) => {
-    const div       = document.createElement("div");
-    div.className   = "menu-item" + (i === 0 ? " menu-active" : "");
+    const div = document.createElement("div");
+    div.className = "menu-item" + (i === 0 ? " menu-active" : "");
     div.textContent = item.label;
     menuCarousel.appendChild(div);
   });
-  
+
   systemMenu.appendChild(menuCarousel);
   menuItems = menuCarousel.querySelectorAll(".menu-item");
 }
 
 function updateMenuHighlight() {
   menuItems.forEach((el, i) => el.classList.toggle("menu-active", i === menuIndex));
-  
+
   // Centrar el item activo (igual que carrusel de juegos)
   const active = menuItems[menuIndex];
   if (!active) return;
-  
+
   const menuCarousel = document.getElementById("menuCarousel");
-  const rect   = active.getBoundingClientRect();
+  const rect = active.getBoundingClientRect();
   const center = window.innerWidth / 2;
-  const delta  = center - (rect.left + rect.width / 2);
-  
-  const t     = menuCarousel.style.transform;
+  const delta = center - (rect.left + rect.width / 2);
+
+  const t = menuCarousel.style.transform;
   const match = t && t.match(/-?[\d.]+/);
-  const x     = match ? parseFloat(match[0]) || 0 : 0;
-  
+  const x = match ? parseFloat(match[0]) || 0 : 0;
+
   menuCarousel.style.transform = `translateX(${x + delta}px)`;
 }
 
 function showMenu() {
   menuVisible = true;
-  menuIndex   = 0;
+  menuIndex = 0;
   systemMenu.classList.remove("hidden");
   systemMenu.classList.remove("fully-hidden");
   viewport.classList.add("menu-open"); // Desplaza juegos hacia abajo
@@ -224,7 +224,7 @@ function hideMenu() {
   menuArrowLeft.classList.remove("visible"); // Oculta flechas del menú
   menuArrowRight.classList.remove("visible");
   playSound("move");
-  
+
   setTimeout(() => {
     if (!menuVisible) {
       systemMenu.classList.add("fully-hidden");
@@ -235,27 +235,35 @@ function hideMenu() {
 async function executeMenuAction(item) {
   playSound("select");
   if (item.action === "exit") { window.api.exitApp(); return; }
-  if (item.command)           { await window.api.execCommand(item.command); }
+  if (item.action === "openConfig") {
+    await window.api.execCommand("start \"\" \"" + process.execPath + "\" --config");
+    return;
+  }
+  if (item.exe) { await window.api.launchGame(item.exe, null, []); return; }
+  if (item.command) { await window.api.execCommand(item.command); }
 }
 
 //  MUSICA DE FONDO 
 function startBackgroundMusic() {
   if (!media.music || !media.music.length) return;
 
-  const track    = media.music[Math.floor(Math.random() * media.music.length)];
-  bgMusic        = new Audio(resolvePath(track));
-  bgMusic.loop   = true;
+  const track = media.music[Math.floor(Math.random() * media.music.length)];
+  bgMusic = new Audio(resolvePath(track));
+  bgMusic.loop = true;
+
+  // Aplicar volumen desde config (0-100 → 0-1)
+  const configVolume = (media.volume !== undefined) ? media.volume / 100 : 0.4;
   bgMusic.volume = 0;
-  bgMusic.play().catch(() => {});
-  
-  fadeInMusic();
+  bgMusic.play().catch(() => { });
+
+  fadeInMusic(configVolume); // Pasar volumen objetivo
 }
 
 function fadeOutMusic(duration) {
   if (!bgMusic) return;
   duration = duration || 2000;
   clearInterval(fadeTimer);
-  const steps   = 20;
+  const steps = 20;
   const stepAmt = bgMusic.volume / steps;
   fadeTimer = setInterval(() => {
     if (bgMusic.volume > stepAmt) { bgMusic.volume -= stepAmt; }
@@ -263,19 +271,26 @@ function fadeOutMusic(duration) {
   }, duration / steps);
 }
 
-function fadeInMusic() {
+function fadeInMusic(targetVolume = 0.4) {
   if (!bgMusic) return;
   clearInterval(fadeTimer);
-  if (bgMusic.paused) bgMusic.play().catch(() => {});
-  const stepAmt = 0.04;
+  if (bgMusic.paused) bgMusic.play().catch(() => { });
+  const stepAmt = targetVolume / 20; // 20 pasos
   fadeTimer = setInterval(() => {
-    if (bgMusic.volume < 0.4 - stepAmt) { bgMusic.volume += stepAmt; }
-    else { bgMusic.volume = 0.4; clearInterval(fadeTimer); }
+    if (bgMusic.volume < targetVolume - stepAmt) {
+      bgMusic.volume += stepAmt;
+    } else {
+      bgMusic.volume = targetVolume;
+      clearInterval(fadeTimer);
+    }
   }, 50);
 }
 
-window.addEventListener("focus", () => fadeInMusic());
-window.addEventListener("blur",  () => fadeOutMusic());
+window.addEventListener("focus", () => {
+  const vol = (media.volume !== undefined) ? media.volume / 100 : 0.4;
+  fadeInMusic(vol);
+});
+window.addEventListener("blur", () => fadeOutMusic());
 
 //  TECLADO 
 document.addEventListener("keydown", async (e) => {
@@ -286,22 +301,22 @@ document.addEventListener("keydown", async (e) => {
       e.preventDefault();
       if (navigationLocked) return; // Evita spam
       navigationLocked = true;
-      
+
       index = (index - 1 + items.length) % items.length;
       playSound("move");
       updateCarousel();
-      
+
       setTimeout(() => { navigationLocked = false; }, 200); // Unlock tras 200ms
 
     } else if (e.key === "ArrowRight") {
       e.preventDefault();
       if (navigationLocked) return;
       navigationLocked = true;
-      
+
       index = (index + 1) % items.length;
       playSound("move");
       updateCarousel();
-      
+
       setTimeout(() => { navigationLocked = false; }, 200);
 
     } else if (e.key === "ArrowUp") {
@@ -323,22 +338,22 @@ document.addEventListener("keydown", async (e) => {
       e.preventDefault();
       if (navigationLocked) return;
       navigationLocked = true;
-      
+
       menuIndex = (menuIndex - 1 + menu.length) % menu.length;
       updateMenuHighlight();
       playSound("move");
-      
+
       setTimeout(() => { navigationLocked = false; }, 200);
 
     } else if (e.key === "ArrowRight") {
       e.preventDefault();
       if (navigationLocked) return;
       navigationLocked = true;
-      
+
       menuIndex = (menuIndex + 1) % menu.length;
       updateMenuHighlight();
       playSound("move");
-      
+
       setTimeout(() => { navigationLocked = false; }, 200);
 
     } else if (e.key === "ArrowDown") {
