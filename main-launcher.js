@@ -1,13 +1,75 @@
 const registerConfigIPC = require("./ipc-config");
 const { app, BrowserWindow, ipcMain } = require("electron");
-const path       = require("path");
-const fs         = require("fs");
-const { spawn }  = require("child_process");
+const path = require("path");
+const fs = require("fs");
+const { spawn, exec } = require("child_process");
 
 app.commandLine.appendSwitch("autoplay-policy", "no-user-gesture-required");
 
 let win;
 let reloadTimeout = null;
+let settings = { autoStart: false, disableShell: false };
+
+//  Cargar settings.json 
+function loadSettings() {
+  try {
+    let settingsPath;
+    if (app.isPackaged) {
+      settingsPath = path.join(process.resourcesPath, "settings.json");
+    } else {
+      settingsPath = path.join(__dirname, "settings.json");
+    }
+
+    if (fs.existsSync(settingsPath)) {
+      settings = JSON.parse(fs.readFileSync(settingsPath, "utf8"));
+      console.log("Settings cargados:", settings);
+    } else {
+      console.log("No se encontró settings.json, usando valores por defecto");
+    }
+  } catch (e) {
+    console.error("Error cargando settings:", e.message);
+  }
+}
+
+//  Guardar settings.json 
+function saveSettings() {
+  try {
+    let settingsPath;
+    if (app.isPackaged) {
+      settingsPath = path.join(process.resourcesPath, "settings.json");
+    } else {
+      settingsPath = path.join(__dirname, "settings.json");
+    }
+
+    fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2), "utf8");
+    console.log("Settings guardados:", settings);
+  } catch (e) {
+    console.error("Error guardando settings:", e.message);
+  }
+}
+
+//  Manejar Explorer (GUI de Windows) 
+function killExplorer() {
+  if (!settings.disableShell) return;
+
+  exec("taskkill /f /im explorer.exe", (err) => {
+    if (err) {
+      console.error("Error cerrando explorer:", err.message);
+    } else {
+      console.log("Explorer cerrado");
+    }
+  });
+}
+
+function startExplorer() {
+  exec("start explorer.exe", (err) => {
+    if (err) {
+      console.error("Error abriendo explorer:", err.message);
+    } else {
+      console.log("Explorer iniciado");
+    }
+  });
+}
 
 function createWindow() {
   win = new BrowserWindow({
@@ -25,7 +87,7 @@ function createWindow() {
   win.loadFile(path.join(__dirname, "public", "launcher", "index.html"));
 
   win.on("focus", () => win.webContents.send("launcher-focus"));
-  win.on("blur",  () => win.webContents.send("launcher-blur"));
+  win.on("blur", () => win.webContents.send("launcher-blur"));
 }
 
 //  Observar cambios en config/ y notificar al renderer 
@@ -47,6 +109,13 @@ function startConfigWatcher(configDir) {
 }
 
 app.whenReady().then(() => {
+  loadSettings(); // Cargar settings al inicio
+
+  // Si disableShell está activo, cerrar explorer
+  if (settings.disableShell) {
+    setTimeout(() => killExplorer(), 2000); // Delay para evitar conflictos
+  }
+
   const configDir = registerConfigIPC(__dirname); // ← retorna la ruta resuelta
   startConfigWatcher(configDir);                 // ← la pasa al watcher
   createWindow();
@@ -55,59 +124,65 @@ app.whenReady().then(() => {
 //  Lanzar juego (puede ser 1 o 2 ejecutables) 
 ipcMain.handle("launch-game", async (_, exePath, exePath2, args = []) => {
   if (!exePath) return { ok: false, error: "no path" };
-  
+
   try {
+    // Minimizar launcher antes de lanzar el juego
+    if (win && !win.isDestroyed()) {
+      // win.setSkipTaskbar(true); // quitar de la barra
+      //win.hide();               // ocultar ventana
+      win.blur();                 // la quita de foco
+    }
+
     // Obtener directorio del ejecutable
     const cwd1 = path.dirname(exePath);
-    
+
     console.log("Lanzando juego:");
     console.log("  Ruta:", exePath);
     console.log("  CWD:", cwd1);
     console.log("  Args:", args);
-    
+
     // Envolver la ruta en comillas para manejar espacios
     const quotedPath = `"${exePath}"`;
-    
-    // Lanzar usando shell (igual que doble clic en Windows)
-    const child1 = spawn(quotedPath, args, { 
-      detached: true, 
-      stdio: "ignore",
+
+    // Lanzar usando shell
+    const child1 = spawn(quotedPath, args, {
       cwd: cwd1,
-      shell: true,  // ← Usa cmd.exe (como doble clic)
+      shell: true,
       windowsHide: false
     });
-    
-    // Capturar errores del proceso
-    child1.on('error', (err) => {
-      console.error("Error al lanzar juego:", err);
+
+    child1.on("exit", () => {
+      if (win && !win.isDestroyed()) {
+        win.setSkipTaskbar(false);
+        win.show();
+        win.focus();
+      }
     });
-    
-    child1.unref();
-    
+
     // Si hay ejecutable secundario
     if (exePath2) {
       const cwd2 = path.dirname(exePath2);
       const quotedPath2 = `"${exePath2}"`;
-      
+
       console.log("Lanzando ejecutable secundario:");
       console.log("  Ruta:", exePath2);
       console.log("  CWD:", cwd2);
-      
-      const child2 = spawn(quotedPath2, args, { 
-        detached: true, 
+
+      const child2 = spawn(quotedPath2, args, {
+        detached: true,
         stdio: "ignore",
         cwd: cwd2,
         shell: true,
         windowsHide: false
       });
-      
+
       child2.on('error', (err) => {
         console.error("Error al lanzar exe2:", err);
       });
-      
+
       child2.unref();
     }
-    
+
     return { ok: true };
   } catch (err) {
     console.error("Exception en launch-game:", err);
@@ -115,17 +190,50 @@ ipcMain.handle("launch-game", async (_, exePath, exePath2, args = []) => {
   }
 });
 
-//  Cerrar la app (abre explorer.exe primero) 
+//  Cerrar la app (abre explorer.exe primero si estaba desactivado) 
 ipcMain.on("exit-app", () => {
-  try {
-    // Abrir explorer antes de cerrar
-    spawn("explorer.exe", [], { detached: true, stdio: "ignore" }).unref();
-  } catch (e) {
-    console.error("No se pudo abrir explorer:", e);
-  }
-  
+  // Siempre iniciar explorer al salir (por si estaba desactivado)
+  startExplorer();
+
   // Pequeño delay para que explorer se abra
-  setTimeout(() => app.quit(), 200);
+  setTimeout(() => app.quit(), 500);
+});
+
+//  Manejar settings (auto-inicio y shell) 
+ipcMain.handle("read-settings", async () => {
+  return settings;
+});
+
+ipcMain.handle("write-settings", async (_, newSettings) => {
+  try {
+    const exePath = app.getPath('exe');
+    const regKey = 'HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run';
+    const regName = 'GrooveStation';
+
+    // Actualizar auto-inicio en el registro
+    if (newSettings.autoStart) {
+      // Agregar al registro
+      exec(`reg add "${regKey}" /v "${regName}" /t REG_SZ /d "\\"${exePath}\\"" /f`, (err) => {
+        if (err) console.error("Error agregando auto-inicio:", err.message);
+        else console.log("Auto-inicio habilitado");
+      });
+    } else {
+      // Eliminar del registro
+      exec(`reg delete "${regKey}" /v "${regName}" /f`, (err) => {
+        if (err) console.error("Error eliminando auto-inicio:", err.message);
+        else console.log("Auto-inicio deshabilitado");
+      });
+    }
+
+    // Guardar settings
+    settings = newSettings;
+    saveSettings();
+
+    return { ok: true };
+  } catch (e) {
+    console.error("Error guardando settings:", e.message);
+    return { ok: false, error: String(e) };
+  }
 });
 
 app.on("window-all-closed", () => { app.quit(); });

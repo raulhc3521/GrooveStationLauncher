@@ -4,7 +4,7 @@ const path = require("path");
 
 module.exports = function registerConfigIPC(baseDir) {
 
-  //  Resolver carpeta de config 
+  // Resolver carpeta de config 
   // En desarrollo:  usa config/ del proyecto (lectura + escritura)
   // Empaquetado:    copia config/ a userData la primera vez,
   //                 luego lee/escribe desde ahí
@@ -76,7 +76,7 @@ module.exports = function registerConfigIPC(baseDir) {
   ipcMain.handle("open-exe", async () => {
     const res = await dialog.showOpenDialog({
       properties: ["openFile"],
-      filters: [{ name: "Ejecutables", extensions: ["exe"] }]
+      filters: [{ name: "Ejecutables", extensions: ["exe", "lnk", "bat"] }]
     });
     return res.canceled ? null : res.filePaths[0];
   });

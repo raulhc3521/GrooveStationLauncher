@@ -5,6 +5,9 @@ const systemMenu    = document.getElementById("systemMenu");
 const bgVideo       = document.getElementById("bgVideo");
 const splashOverlay = document.getElementById("splashOverlay");
 const viewport      = document.querySelector(".viewport");
+const backgroundBar = document.querySelector(".logo-background-bar");
+const menuArrowLeft = document.getElementById("menuArrowLeft");
+const menuArrowRight = document.getElementById("menuArrowRight");
 
 let games = [];
 let menu  = [];
@@ -205,7 +208,10 @@ function showMenu() {
   menuIndex   = 0;
   systemMenu.classList.remove("hidden");
   systemMenu.classList.remove("fully-hidden");
-  viewport.classList.add("menu-open"); 
+  viewport.classList.add("menu-open"); // Desplaza juegos hacia abajo
+  backgroundBar.classList.add("menu-open"); // Desplaza fondo blanco también
+  menuArrowLeft.classList.add("visible"); // Muestra flechas del menú
+  menuArrowRight.classList.add("visible");
   updateMenuHighlight();
   playSound("move");
 }
@@ -214,6 +220,9 @@ function hideMenu() {
   menuVisible = false;
   systemMenu.classList.add("hidden");
   viewport.classList.remove("menu-open");
+  backgroundBar.classList.remove("menu-open"); // Restablece posición del fondo
+  menuArrowLeft.classList.remove("visible"); // Oculta flechas del menú
+  menuArrowRight.classList.remove("visible");
   playSound("move");
   
   setTimeout(() => {
@@ -268,7 +277,7 @@ function fadeInMusic() {
 window.addEventListener("focus", () => fadeInMusic());
 window.addEventListener("blur",  () => fadeOutMusic());
 
-//  TECLADO (CON DEBOUNCE EN NAVEGACIÓN) 
+//  TECLADO 
 document.addEventListener("keydown", async (e) => {
 
   if (!menuVisible) {
@@ -282,7 +291,7 @@ document.addEventListener("keydown", async (e) => {
       playSound("move");
       updateCarousel();
       
-      setTimeout(() => { navigationLocked = false; }, 200); // Unlock tras 500ms
+      setTimeout(() => { navigationLocked = false; }, 200); // Unlock tras 200ms
 
     } else if (e.key === "ArrowRight") {
       e.preventDefault();

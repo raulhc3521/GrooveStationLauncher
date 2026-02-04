@@ -1,6 +1,6 @@
 {
   "name": "groovestation-launcher",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "GrooveStation Arcade Game Launcher",
   "main": "main.js",
   "author": "Raulhc3521",
@@ -33,18 +33,25 @@
       {
         "from": "config",
         "to": "config"
+      },
+      {
+        "from": "assets",
+        "to": "assets"
       }
     ],
     "win": {
       "target": [
         {
           "target": "nsis",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         }
       ],
       "icon": "build/icon.ico"
     },
     "nsis": {
+      "perMachine": true,
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "allowElevation": true,

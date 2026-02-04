@@ -1,6 +1,4 @@
-// 
 // ARCADE CONFIGURATOR — Proceso Renderer
-// 
 
 const gameList     = document.getElementById("gameList");
 const addGameBtn   = document.getElementById("addGameBtn");
@@ -12,10 +10,13 @@ const menuList     = document.getElementById("menuList");
 const addMenuBtn   = document.getElementById("addMenuBtn");
 const saveBtn      = document.getElementById("saveBtn");
 const cancelBtn    = document.getElementById("cancelBtn");
+const autoStartCheckbox   = document.getElementById("autoStartCheckbox");
+const disableShellCheckbox = document.getElementById("disableShellCheckbox");
 
 let games     = [];
 let media     = { music: [], backgroundVideos: [] };
 let menuItems = [];
+let settings  = { autoStart: false, disableShell: false };
 
 // Copia inicial para detectar cambios
 let initialState = null;
@@ -35,8 +36,13 @@ function saveAll() {
   window.api.writeConfig("media",  media);
   window.api.writeConfig("menu",   menuItems);
   
+  // Guardar settings del sistema
+  settings.autoStart = autoStartCheckbox.checked;
+  settings.disableShell = disableShellCheckbox.checked;
+  window.api.writeSettings(settings);
+  
   // Actualizar estado inicial tras guardar
-  initialState = JSON.stringify({ games, media, menuItems });
+  initialState = JSON.stringify({ games, media, menuItems, settings });
   
   alert("✅ Cambios guardados correctamente");
 }
@@ -52,6 +58,11 @@ function cancelChanges() {
   games     = state.games;
   media     = state.media;
   menuItems = state.menuItems;
+  settings  = state.settings || { autoStart: false, disableShell: false };
+  
+  // Restaurar checkboxes
+  autoStartCheckbox.checked = settings.autoStart;
+  disableShellCheckbox.checked = settings.disableShell;
   
   renderGames();
   renderMusic();
@@ -64,6 +75,7 @@ async function load() {
   const g  = await window.api.readConfig("games");
   const md = await window.api.readConfig("media");
   const m  = await window.api.readConfig("menu");
+  const s  = await window.api.readSettings();
 
   if (!g  || g.error)  { console.error("games:", g);  return; }
   if (!md || md.error) { console.error("media:", md); return; }
@@ -81,8 +93,15 @@ async function load() {
   if (!media.backgroundVideos) media.backgroundVideos = [];
   if (!media.music) media.music = [];
 
+  // Cargar settings del sistema
+  if (s) {
+    settings = s;
+    autoStartCheckbox.checked = settings.autoStart || false;
+    disableShellCheckbox.checked = settings.disableShell || false;
+  }
+
   // Guardar estado inicial
-  initialState = JSON.stringify({ games, media, menuItems });
+  initialState = JSON.stringify({ games, media, menuItems, settings });
 
   renderGames();
   renderMusic();

@@ -10,6 +10,10 @@ contextBridge.exposeInMainWorld("api", {
   readConfig: (file) => ipcRenderer.invoke("read-config", file),
   writeConfig: (file, data) => ipcRenderer.invoke("write-config", file, data),
 
+  // Lectura / escritura de settings (auto-inicio y shell)
+  readSettings: () => ipcRenderer.invoke("read-settings"),
+  writeSettings: (settings) => ipcRenderer.invoke("write-settings", settings),
+
   // Dialogos de archivo
   openFile: (options) => ipcRenderer.invoke("open-file", options),
   openExe: () => ipcRenderer.invoke("open-exe"),
