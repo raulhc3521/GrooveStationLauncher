@@ -193,8 +193,9 @@ html, body {
 /*  Menu del sistema (BORDE A BORDE, centrado como carrusel)  */
 #systemMenu {
   position: fixed;
+  width: 120%;
   top: 0;
-  left: 0;
+  left: -10%;
   right: 0;
   background: rgb(255, 255, 255);
   color: black;

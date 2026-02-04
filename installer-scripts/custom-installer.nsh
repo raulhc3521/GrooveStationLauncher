@@ -1,5 +1,7 @@
-# ─── Accesos directos (después de instalar) ───────────────────
+# Accesos directos (después de instalar) 
+
 !macro customInstall
+  !define MUI_FINISHPAGE_BITMAP "build/installer-sidebar.bmp"
   # Escritorio
   CreateShortCut "$DESKTOP\GrooveStation Config.lnk" "$INSTDIR\GrooveStation.exe" "--config" "$INSTDIR\resources\icon-config.ico" 0
 
@@ -14,24 +16,14 @@
   FileClose $0
 !macroend
 
-# ─── Configuración de página final (2 checkboxes) ─────────────
+# Configuración de página final
 !macro customHeader
-  !define MUI_FINISHPAGE_RUN "$INSTDIR\GrooveStation.exe"
-  !define MUI_FINISHPAGE_RUN_TEXT "Ejecutar GrooveStation Launcher"
+  !define MUI_FINISHPAGE_RUN '"$INSTDIR\GrooveStation.exe" --config'
+  !define MUI_FINISHPAGE_RUN_TEXT "Abrir Configurador"
   !define MUI_FINISHPAGE_RUN_NOTCHECKED
-  
-  !define MUI_FINISHPAGE_SHOWREADME
-  !define MUI_FINISHPAGE_SHOWREADME_TEXT "Abrir Configurador"
-  !define MUI_FINISHPAGE_SHOWREADME_NOTCHECKED
-  !define MUI_FINISHPAGE_SHOWREADME_FUNCTION LaunchConfigurator
 !macroend
 
-# Función para lanzar el configurador con --config
-Function LaunchConfigurator
-  Exec '"$INSTDIR\GrooveStation.exe" --config'
-FunctionEnd
-
-# ─── Desinstalar ───────────────────────────────────────────────
+# Desinstalar
 !macro customUnInstall
   Delete "$DESKTOP\GrooveStation Launcher.lnk"
   Delete "$DESKTOP\GrooveStation Config.lnk"
