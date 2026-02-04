@@ -219,9 +219,13 @@ ipcMain.handle("write-settings", async (_, newSettings) => {
       });
     } else {
       // Eliminar del registro
-      exec(`reg delete "${regKey}" /v "${regName}" /f`, (err) => {
-        if (err) console.error("Error eliminando auto-inicio:", err.message);
-        else console.log("Auto-inicio deshabilitado");
+      exec(`reg delete "${regKey}" /v "${regName}" /f 2>nul`, (err) => {
+        // Silenciar error si la clave no existe
+        if (!err || err.message.includes("no ha podido encontrar")) {
+          console.log("Auto-inicio deshabilitado (o ya estaba deshabilitado)");
+        } else {
+          //console.error("No se encontró el registro auto-inicio:", err.message);
+        }
       });
     }
 

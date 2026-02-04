@@ -1,18 +1,10 @@
 [
   {
     "id": "stepmania",
-    "name": "StepMania",
-    "exe": "D:\\StepMania 5\\Program\\StepMania.exe",
+    "name": "StepMania 5",
+    "exe": "C:\\Games\\Stepmania 5\\Program\\Stepmania.exe",
     "exe2": "",
-    "image": "C:\\Launcher\\assets\\images\\stepmania.png",
-    "enabled": true
-  },
-  {
-    "id": "ddr",
-    "name": "DDR",
-    "exe": "C:\\Games\\DDR\\spice.exe",
-    "exe2": "C:\\Games\\DDR\\launcher.exe",
-    "image": "C:\\Launcher\\assets\\images\\ddr.png",
+    "image": "C:\\Program Files\\GrooveStation\\resources\\assets\\images\\stepmania.png",
     "enabled": true
   }
 ]

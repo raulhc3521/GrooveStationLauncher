@@ -251,3 +251,15 @@ section>button {
   color: #94a3b8;
   line-height: 1.5;
 }
+
+/* Miniaturas de imágenes */
+.image-preview {
+  display: block;
+  margin: 8px auto;
+  max-height: 100px;
+  max-width: 100%;
+  border-radius: 6px;
+  border: 1px solid #2a2a4a;
+  object-fit: contain;
+  display: block;
+}

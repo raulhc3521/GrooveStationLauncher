@@ -1,14 +1,15 @@
 {
   "music": [
-    "C:\\Program Files\\GrooveStation\\resources\\assets\\music\\track1.ogg",
-    "C:\\Program Files\\GrooveStation\\resources\\assets\\music\\track2.ogg",
-    "C:\\Program Files\\GrooveStation\\resources\\assets\\music\\track3.ogg",
-    "C:\\Program Files\\GrooveStation\\resources\\assets\\music\\track4.ogg",
-    "C:\\Program Files\\GrooveStation\\resources\\assets\\music\\track5.ogg"
+    "C:\\Program Files\\GrooveStation\\GrooveStation\\resources\\assets\\music\\track1.ogg",
+    "C:\\Program Files\\GrooveStation\\GrooveStation\\resources\\assets\\music\\track2.ogg",
+    "C:\\Program Files\\GrooveStation\\GrooveStation\\resources\\assets\\music\\track3.ogg",
+    "C:\\Program Files\\GrooveStation\\GrooveStation\\resources\\assets\\music\\track4.ogg",
+    "C:\\Program Files\\GrooveStation\\GrooveStation\\resources\\assets\\music\\track5.ogg"
   ],
   "backgroundVideos": [
-    "C:\\Program Files\\GrooveStation\\resources\\assets\\video\\bg1.mp4",
-    "C:\\Program Files\\GrooveStation\\resources\\assets\\video\\bg2.mp4"
+    "C:\\Program Files\\GrooveStation\\GrooveStation\\resources\\assets\\video\\bg1.mp4",
+    "C:\\Program Files\\GrooveStation\\GrooveStation\\resources\\assets\\video\\bg2.mp4"
   ],
-  "startSound": "C:\\Program Files\\GrooveStation\\resources\\assets\\sounds\\start.ogg"
+  "startSound": "...",
+  "volume": 80
 }

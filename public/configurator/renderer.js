@@ -1,22 +1,24 @@
 // ARCADE CONFIGURATOR — Proceso Renderer
 
-const gameList     = document.getElementById("gameList");
-const addGameBtn   = document.getElementById("addGameBtn");
-const musicList    = document.getElementById("musicList");
-const addMusicBtn  = document.getElementById("addMusicBtn");
-const videoList    = document.getElementById("videoList");
-const addVideoBtn  = document.getElementById("addVideoBtn");
-const menuList     = document.getElementById("menuList");
-const addMenuBtn   = document.getElementById("addMenuBtn");
-const saveBtn      = document.getElementById("saveBtn");
-const cancelBtn    = document.getElementById("cancelBtn");
-const autoStartCheckbox   = document.getElementById("autoStartCheckbox");
+const gameList = document.getElementById("gameList");
+const addGameBtn = document.getElementById("addGameBtn");
+const musicList = document.getElementById("musicList");
+const addMusicBtn = document.getElementById("addMusicBtn");
+const videoList = document.getElementById("videoList");
+const addVideoBtn = document.getElementById("addVideoBtn");
+const menuList = document.getElementById("menuList");
+const addMenuBtn = document.getElementById("addMenuBtn");
+const saveBtn = document.getElementById("saveBtn");
+const cancelBtn = document.getElementById("cancelBtn");
+const autoStartCheckbox = document.getElementById("autoStartCheckbox");
 const disableShellCheckbox = document.getElementById("disableShellCheckbox");
+const volumeSlider = document.getElementById("volumeSlider");
+const volumeLabel = document.getElementById("volumeLabel");
 
-let games     = [];
-let media     = { music: [], backgroundVideos: [] };
+let games = [];
+let media = { music: [], backgroundVideos: [] };
 let menuItems = [];
-let settings  = { autoStart: false, disableShell: false };
+let settings = { autoStart: false, disableShell: false };
 
 // Copia inicial para detectar cambios
 let initialState = null;
@@ -25,65 +27,68 @@ let initialState = null;
 function escapeHtml(str) {
   if (str == null) return "";
   return String(str)
-    .replace(/&/g,  "&amp;")
-    .replace(/</g,  "&lt;")
-    .replace(/>/g,  "&gt;")
-    .replace(/"/g,  "&quot;");
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }
 
 function saveAll() {
-  window.api.writeConfig("games",  games);
-  window.api.writeConfig("media",  media);
-  window.api.writeConfig("menu",   menuItems);
-  
+  window.api.writeConfig("games", games);
+  window.api.writeConfig("media", media);
+  window.api.writeConfig("menu", menuItems);
+
   // Guardar settings del sistema
   settings.autoStart = autoStartCheckbox.checked;
   settings.disableShell = disableShellCheckbox.checked;
   window.api.writeSettings(settings);
-  
+
   // Actualizar estado inicial tras guardar
   initialState = JSON.stringify({ games, media, menuItems, settings });
-  
+
   alert("✅ Cambios guardados correctamente");
+  window.close();
+  app.quit();
 }
 
 function cancelChanges() {
   if (!initialState) return;
-  
+
   const confirmed = confirm("⚠️ ¿Descartar todos los cambios y recargar?");
   if (!confirmed) return;
-  
+
   // Recargar desde el estado inicial
   const state = JSON.parse(initialState);
-  games     = state.games;
-  media     = state.media;
+  games = state.games;
+  media = state.media;
   menuItems = state.menuItems;
-  settings  = state.settings || { autoStart: false, disableShell: false };
-  
+  settings = state.settings || { autoStart: false, disableShell: false };
+
   // Restaurar checkboxes
   autoStartCheckbox.checked = settings.autoStart;
   disableShellCheckbox.checked = settings.disableShell;
-  
+
   renderGames();
   renderMusic();
   renderVideos();
   renderMenu();
 }
 
-//  CARGA INICIAL 
+// CARGA INICIAL 
 async function load() {
-  const g  = await window.api.readConfig("games");
+  const g = await window.api.readConfig("games");
   const md = await window.api.readConfig("media");
-  const m  = await window.api.readConfig("menu");
-  const s  = await window.api.readSettings();
+  const m = await window.api.readConfig("menu");
 
-  if (!g  || g.error)  { console.error("games:", g);  return; }
+  // Validar ANTES de asignar
+  if (!g || g.error) { console.error("games:", g); return; }
   if (!md || md.error) { console.error("media:", md); return; }
-  if (!m  || m.error)  { console.error("menu:",  m);  return; }
+  if (!m || m.error) { console.error("menu:", m); return; }
 
-  games     = g;
+  // Ahora sí asignar
+  games = g;
   menuItems = m;
-  
+
   // Migrar backgroundVideo → backgroundVideos si es necesario
   media = md;
   if (md.backgroundVideo && !md.backgroundVideos) {
@@ -93,11 +98,32 @@ async function load() {
   if (!media.backgroundVideos) media.backgroundVideos = [];
   if (!media.music) media.music = [];
 
-  // Cargar settings del sistema
-  if (s) {
-    settings = s;
-    autoStartCheckbox.checked = settings.autoStart || false;
-    disableShellCheckbox.checked = settings.disableShell || false;
+  // Cargar volumen
+  if (media.volume !== undefined) {
+    volumeSlider.value = media.volume;
+    volumeLabel.textContent = media.volume + "%";
+  } else {
+    media.volume = 80; // Default
+  }
+
+  // Cargar settings del sistema (de forma defensiva)
+  try {
+    const s = await window.api.readSettings();
+    if (s && !s.error) {
+      settings = s;
+      autoStartCheckbox.checked = settings.autoStart || false;
+      disableShellCheckbox.checked = settings.disableShell || false;
+    } else {
+      // Si falla, usar valores por defecto
+      settings = { autoStart: false, disableShell: false };
+      autoStartCheckbox.checked = false;
+      disableShellCheckbox.checked = false;
+    }
+  } catch (e) {
+    console.warn("No se pudieron cargar settings, usando valores por defecto:", e);
+    settings = { autoStart: false, disableShell: false };
+    autoStartCheckbox.checked = false;
+    disableShellCheckbox.checked = false;
   }
 
   // Guardar estado inicial
@@ -117,27 +143,28 @@ function renderGames() {
     const li = document.createElement("li");
     li.innerHTML =
       '<div class="field">' +
-        '<label>Nombre</label>' +
-        '<input class="name" value="' + escapeHtml(gm.name) + '" data-i="' + i + '">' +
+      '<label>Nombre</label>' +
+      '<input class="name" value="' + escapeHtml(gm.name) + '" data-i="' + i + '">' +
       '</div>' +
       '<div class="field">' +
-        '<label>Ejecutable 1</label>' +
-        '<input type="text" class="exe" value="' + escapeHtml(gm.exe) + '" data-i="' + i + '">' +
-        '<button class="browse-exe" data-i="' + i + '">📂</button>' +
+      '<label>Ejecutable 1</label>' +
+      '<input type="text" class="exe" value="' + escapeHtml(gm.exe) + '" data-i="' + i + '">' +
+      '<button class="browse-exe" data-i="' + i + '">📂</button>' +
       '</div>' +
       '<div class="field">' +
-        '<label>Ejecutable 2</label>' +
-        '<input type="text" class="exe2" value="' + escapeHtml(gm.exe2 || "") + '" data-i="' + i + '">' +
-        '<button class="browse-exe2" data-i="' + i + '">📂</button>' +
+      '<label>Ejecutable 2</label>' +
+      '<input type="text" class="exe2" value="' + escapeHtml(gm.exe2 || "") + '" data-i="' + i + '">' +
+      '<button class="browse-exe2" data-i="' + i + '">📂</button>' +
       '</div>' +
       '<div class="field">' +
-        '<label>Imagen (logo)</label>' +
-        '<input type="text" class="image" value="' + escapeHtml(gm.image || "") + '" data-i="' + i + '">' +
-        '<button class="browse-image" data-i="' + i + '">🖼️</button>' +
+      '<label>Imagen (logo)</label>' +
+      '<input type="text" class="img" value="' + escapeHtml(gm.image) + '" data-i="' + i + '" readonly>' +
+      '<button class="browse-image" data-i="' + i + '">🖼️</button>' +
       '</div>' +
+      (gm.image ? '<img src="file:///' + gm.image.replace(/\\/g, '/') + '" class="image-preview" alt="Preview">' : '') +
       '<div class="field">' +
-        '<label><input type="checkbox" class="enabled" data-i="' + i + '" ' + (gm.enabled ? "checked" : "") + '> Habilitado</label>' +
-        '<button class="del" data-i="' + i + '">🗑️ Eliminar</button>' +
+      '<label><input type="checkbox" class="enabled" data-i="' + i + '" ' + (gm.enabled ? "checked" : "") + '> Habilitado</label>' +
+      '<button class="del" data-i="' + i + '">🗑️ Eliminar</button>' +
       '</div>';
     gameList.appendChild(li);
   });
@@ -189,9 +216,10 @@ function renderGames() {
 
   gameList.querySelectorAll(".browse-image").forEach(btn => {
     btn.addEventListener("click", async e => {
+      const i = +e.target.dataset.i;
       const file = await window.api.openImage();
       if (file) {
-        games[+e.target.dataset.i].image = file;
+        games[i].image = file;
         renderGames();
       }
     });
@@ -212,13 +240,13 @@ function renderGames() {
 }
 
 addGameBtn.addEventListener("click", () => {
-  games.push({ 
-    id: "g" + Date.now(), 
-    name: "Nuevo juego", 
-    exe: "", 
+  games.push({
+    id: "g" + Date.now(),
+    name: "Nuevo juego",
+    exe: "",
     exe2: "",
-    image: "", 
-    enabled: true 
+    image: "",
+    enabled: true
   });
   renderGames();
 });
@@ -297,20 +325,25 @@ function renderMenu() {
     const li = document.createElement("li");
     li.innerHTML =
       '<div class="field">' +
-        '<label>Etiqueta</label>' +
-        '<input class="menu-label" data-i="' + i + '" value="' + escapeHtml(item.label) + '">' +
+      '<label>Etiqueta</label>' +
+      '<input class="menu-label" data-i="' + i + '" value="' + escapeHtml(item.label) + '">' +
       '</div>' +
       '<div class="field">' +
-        '<label>Comando (shell)</label>' +
-        '<input class="menu-command" data-i="' + i + '" value="' + escapeHtml(item.command || "") + '">' +
+      '<label>Comando (shell)</label>' +
+      '<input class="menu-command" data-i="' + i + '" value="' + escapeHtml(item.command || "") + '">' +
       '</div>' +
       '<div class="field">' +
-        '<label>Accion especial</label>' +
-        '<select class="menu-action" data-i="' + i + '">' +
-          '<option value=""' + (!item.action ? ' selected' : '') + '>— Ninguna</option>' +
-          '<option value="exit"' + (item.action === "exit" ? ' selected' : '') + '>Cerrar launcher</option>' +
-        '</select>' +
-        '<button class="del-menu" data-i="' + i + '">🗑️ Eliminar</button>' +
+      '<label>Ejecutable (opcional)</label>' +
+      '<input class="menu-exe" value="' + escapeHtml(item.exe || '') + '" data-i="' + i + '" readonly>' +
+      '<button class="browse-menu-exe" data-i="' + i + '">📁</button>' +
+      '</div>' +
+      '<div class="field">' +
+      '<label>Accion especial</label>' +
+      '<select class="menu-action" data-i="' + i + '">' +
+      '<option value=""' + (!item.action ? ' selected' : '') + '>— Ninguna</option>' +
+      '<option value="exit"' + (item.action === "exit" ? ' selected' : '') + '>Cerrar launcher</option>' +
+      '</select>' +
+      '<button class="del-menu" data-i="' + i + '">🗑️ Eliminar</button>' +
       '</div>';
     menuList.appendChild(li);
   });
@@ -338,10 +371,27 @@ function renderMenu() {
     });
   });
 
+  menuList.querySelectorAll(".menu-exe").forEach(inp => {
+    inp.addEventListener("input", e => {
+      menuItems[+e.target.dataset.i].exe = e.target.value;
+    });
+  });
+
   menuList.querySelectorAll(".del-menu").forEach(btn => {
     btn.addEventListener("click", e => {
       menuItems.splice(+e.target.dataset.i, 1);
       renderMenu();
+    });
+  });
+
+  menuList.querySelectorAll(".browse-menu-exe").forEach(btn => {
+    btn.addEventListener("click", async e => {
+      const i = +e.target.dataset.i;
+      const file = await window.api.openExe();
+      if (file) {
+        menuItems[i].exe = file;
+        renderMenu();
+      }
     });
   });
 }
@@ -355,5 +405,12 @@ addMenuBtn.addEventListener("click", () => {
 saveBtn.addEventListener("click", saveAll);
 cancelBtn.addEventListener("click", cancelChanges);
 
-//  INICIO 
+// CONTROL DE VOLUMEN
+volumeSlider.addEventListener("input", (e) => {
+  const vol = e.target.value;
+  media.volume = parseInt(vol);
+  volumeLabel.textContent = vol + "%";
+});
+
+// INICIO 
 window.addEventListener("DOMContentLoaded", load);

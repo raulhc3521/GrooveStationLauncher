@@ -76,7 +76,7 @@ module.exports = function registerConfigIPC(baseDir) {
   ipcMain.handle("open-exe", async () => {
     const res = await dialog.showOpenDialog({
       properties: ["openFile"],
-      filters: [{ name: "Ejecutables", extensions: ["exe", "lnk", "bat"] }]
+      filters: [{ name: "Ejecutables", extensions: ["exe", "lnk", "bat", "url"] }]
     });
     return res.canceled ? null : res.filePaths[0];
   });
