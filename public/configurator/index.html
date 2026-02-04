@@ -8,9 +8,7 @@
 <body>
   <h1>🎮 Arcade Configurator</h1>
 
- 
-
-  <!-- Seccion: Juegos -->
+    <!-- Seccion: Juegos -->
   <section>
     <h2>Juegos</h2>
     <ul id="gameList"></ul>
@@ -37,7 +35,27 @@
     <button id="addMenuBtn">+ Agregar opción</button>
   </section>
 
-   <!-- Botones principales -->
+  <!-- Seccion: Opciones del sistema -->
+  <section>
+    <h2>⚙️ Opciones del Sistema</h2>
+    <div class="settings-container">
+      <div class="setting-item">
+        <label>
+          <input type="checkbox" id="autoStartCheckbox">
+          Iniciar GrooveStation automáticamente con Windows
+        </label>
+      </div>
+      <div class="setting-item">
+        <label>
+          <input type="checkbox" id="disableShellCheckbox">
+          Desactivar interfaz de Windows (Explorer) al iniciar GrooveStation
+        </label>
+        <p class="setting-note">Nota: Esta opción oculta la barra de tareas y el escritorio. El Explorer se restaurará automáticamente al cerrar GrooveStation.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Botones principales -->
   <div class="main-buttons">
     <button id="saveBtn" class="btn-save">💾 Guardar cambios</button>
     <button id="cancelBtn" class="btn-cancel">❌ Cancelar y recargar</button>
