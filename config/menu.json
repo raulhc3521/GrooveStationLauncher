@@ -1,15 +1,5 @@
 [
   {
-    "id": "config",
-    "label": "Configurador",
-    "command": "start \"\" \"C:\\Program Files\\GrooveStation\\GrooveStation.exe\" --config"
-  },
-  {
-    "id": "explorer",
-    "label": "Explorer",
-    "command": "explorer.exe"
-  },
-  {
     "id": "shutdown",
     "label": "Apagar",
     "command": "shutdown /s /t 0"
@@ -18,6 +8,16 @@
     "id": "restart",
     "label": "Reiniciar",
     "command": "shutdown /r /t 0"
+  },
+  {
+    "id": "config",
+    "label": "Configurar",
+    "command": "start \"\" \"C:\\Program Files\\GrooveStation\\GrooveStation\\GrooveStation.exe\" --config"
+  },
+  {
+    "id": "explorer",
+    "label": "Explorer",
+    "command": "explorer.exe"
   },
   {
     "id": "exit",
